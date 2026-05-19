@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OSIS SMK Ihsanniat Ngoro Jombang</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --c:#00ffe7;--c2:#ff2d78;--c3:#ffe000;--c4:#00aaff;--c5:#7fff00;
+  --bg:#020810;--bg2:#060f1e;--bg3:#0a1628;
+  --card:rgba(0,255,231,.04);--border:rgba(0,255,231,.15);
+  --txt:#b8ddf5;
+  --g1:0 0 25px rgba(0,255,231,.55);--g2:0 0 25px rgba(255,45,120,.55);--g3:0 0 25px rgba(255,224,0,.45);
+}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Exo 2',sans-serif;background:var(--bg);color:var(--txt);overflow-x:hidden;cursor:none}
+
+/* CURSOR */
+#cur{width:9px;height:9px;background:var(--c);border-radius:50%;position:fixed;pointer-events:none;z-index:99999;transform:translate(-50%,-50%);box-shadow:var(--g1)}
+#cur2{width:34px;height:34px;border:1px solid var(--c);border-radius:50%;position:fixed;pointer-events:none;z-index:99998;transform:translate(-50%,-50%);transition:all .13s;opacity:.45}
+
+/* SCANLINE */
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,255,231,.011) 2px,rgba(0,255,231,.011) 4px);pointer-events:none;z-index:10000}
+
+/* BG CANVAS */
+#bgc{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* LOADER */
+#ldr{position:fixed;inset:0;background:var(--bg);z-index:99999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;transition:opacity .7s}
+#ldr.out{opacity:0;pointer-events:none}
+.ldr-logo{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:var(--c);text-shadow:var(--g1);letter-spacing:4px}
+.ldr-bar{width:240px;height:2px;background:rgba(0,255,231,.1);border-radius:2px;overflow:hidden}
+.ldr-fill{height:100%;background:linear-gradient(90deg,var(--c),var(--c4));width:0%;border-radius:2px;box-shadow:var(--g1)}
+.ldr-txt{font-family:'Share Tech Mono',monospace;font-size:.7rem;color:rgba(0,255,231,.55);letter-spacing:2px}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:0 2rem;display:flex;align-items:center;justify-content:space-between;height:66px;background:rgba(2,8,16,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);transition:all .3s}
+nav.sc{height:56px;background:rgba(2,8,16,.98)}
+.nlogo{display:flex;align-items:center;gap:12px;text-decoration:none}
+.nhex{width:40px;height:40px;background:linear-gradient(135deg,var(--c),var(--c4));clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:.95rem;color:#000;font-weight:900;box-shadow:var(--g1);flex-shrink:0}
+.nltxt{font-family:'Orbitron',sans-serif;font-size:.82rem;font-weight:900;color:#fff;letter-spacing:1px;line-height:1.2}
+.nlsub{font-size:.56rem;color:var(--c);letter-spacing:2px;text-transform:uppercase}
+.nlinks{display:flex;gap:.1rem;align-items:center;flex-wrap:wrap}
+.nlinks a{color:var(--txt);text-decoration:none;font-family:'Rajdhani',sans-serif;font-size:.88rem;font-weight:600;padding:5px 10px;border-radius:4px;transition:all .25s;cursor:none;position:relative}
+.nlinks a::after{content:'';position:absolute;bottom:0;left:50%;right:50%;height:1px;background:var(--c);transition:all .3s}
+.nlinks a:hover{color:var(--c)}
+.nlinks a:hover::after{left:8px;right:8px}
+.nbtn{border:1px solid var(--c)!important;color:var(--c)!important;font-family:'Orbitron',sans-serif!important;font-size:.65rem!important;letter-spacing:2px!important;padding:6px 14px!important}
+.nbtn:hover{background:rgba(0,255,231,.1)!important}
+.nbtn::after{display:none!important}
+.ham{display:none;flex-direction:column;gap:5px;cursor:none;padding:8px}
+.ham span{width:24px;height:1.5px;background:var(--c);border-radius:1px;transition:all .3s}
+
+/* HUD */
+.hud{position:fixed;top:76px;right:1.5rem;z-index:900;display:flex;flex-direction:column;gap:.4rem;pointer-events:none}
+.hi{font-family:'Share Tech Mono',monospace;font-size:.56rem;color:rgba(0,255,231,.38);letter-spacing:1.5px;text-align:right}
+.hv{color:var(--c)}
+
+/* SECTION */
+section{position:relative;z-index:1}
+.sec{max-width:1100px;margin:0 auto;padding:85px 2rem}
+.stag{display:inline-flex;align-items:center;gap:8px;color:var(--c);font-family:'Share Tech Mono',monospace;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;margin-bottom:.7rem}
+.stag::before{content:'//'}
+.stag::after{content:'';width:32px;height:1px;background:var(--c)}
+.stit{font-family:'Orbitron',sans-serif;font-size:clamp(1.5rem,3.2vw,2.2rem);font-weight:900;color:#fff;line-height:1.2;margin-bottom:.7rem}
+.stit span{color:var(--c)}
+.sdesc{color:rgba(184,221,245,.52);font-size:.9rem;line-height:1.9;max-width:540px}
+
+/* REVEAL */
+.rv{opacity:0;transform:translateY(40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.rvl{opacity:0;transform:translateX(-40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.rvr{opacity:0;transform:translateX(40px);transition:all .8s cubic-bezier(.16,1,.3,1)}
+.vis{opacity:1!important;transform:none!important}
+
+/* ══ HERO ══ */
+.hero{min-height:100vh;display:flex;flex-direction:column;justify-content:center;position:relative;overflow:hidden;padding:80px 2rem 0}
+.hero-bg{position:absolute;inset:0;z-index:0}
+.hero-bg img{width:100%;height:100%;object-fit:cover;filter:brightness(.1) saturate(.3)}
+.hero-ov{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 40%,rgba(0,80,160,.3) 0%,transparent 70%),linear-gradient(0deg,var(--bg) 0%,transparent 60%);z-index:1}
+.hero-gl{position:absolute;inset:0;background-image:linear-gradient(rgba(0,255,231,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,231,.05) 1px,transparent 1px);background-size:50px 50px;z-index:1;mask-image:radial-gradient(ellipse 90% 90% at 50% 50%,black 15%,transparent 100%)}
+.hero-inner{position:relative;z-index:3;max-width:1100px;margin:0 auto;width:100%;display:grid;grid-template-columns:1.1fr .9fr;gap:3rem;align-items:center;padding:40px 0 30px}
+.badge{display:inline-flex;align-items:center;gap:8px;background:rgba(0,255,231,.07);border:1px solid rgba(0,255,231,.2);padding:4px 14px;border-radius:2px;margin-bottom:1.3rem;font-size:.68rem;letter-spacing:3px;text-transform:uppercase;color:var(--c);font-family:'Share Tech Mono',monospace}
+.ldot{width:6px;height:6px;background:var(--c2);border-radius:50%;animation:blink 1.2s infinite;box-shadow:var(--g2)}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
+.htitle{font-family:'Orbitron',sans-serif;font-size:clamp(1.8rem,4vw,3.5rem);font-weight:900;line-height:1.05;margin-bottom:.9rem}
+.ht1{display:block;color:#fff}
+.ht2{display:block;-webkit-text-stroke:2px var(--c);color:transparent;position:relative}
+.ht2::before{content:attr(data-t);position:absolute;left:0;color:var(--c2);-webkit-text-stroke:0;animation:glA 4s infinite 1s;opacity:.5}
+@keyframes glA{0%,100%{clip-path:inset(100% 0 0 0)}20%{clip-path:inset(25% 0 55% 0);transform:translateX(-3px)}50%{clip-path:inset(60% 0 20% 0);transform:translateX(3px)}80%{clip-path:inset(10% 0 80% 0);transform:translateX(-2px)}}
+.hschool{font-family:'Rajdhani',sans-serif;font-size:.95rem;font-weight:600;color:rgba(184,221,245,.5);letter-spacing:4px;text-transform:uppercase;margin-bottom:1.2rem}
+.hschool em{color:var(--c2);font-style:normal}
+.hdesc{font-size:.9rem;color:rgba(184,221,245,.58);line-height:1.95;margin-bottom:1.7rem;max-width:500px}
+.hbtns{display:flex;gap:.8rem;flex-wrap:wrap}
+.cb{padding:11px 24px;border-radius:2px;font-family:'Orbitron',sans-serif;font-size:.7rem;font-weight:700;letter-spacing:2px;text-decoration:none;display:inline-flex;align-items:center;gap:8px;transition:all .3s;cursor:none;position:relative;overflow:hidden}
+.cb::before{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.12),transparent);transform:translateX(-100%);transition:.4s}
+.cb:hover::before{transform:translateX(100%)}
+.cb1{background:var(--c);color:#000;box-shadow:var(--g1)}
+.cb1:hover{transform:translateY(-3px);box-shadow:0 0 45px rgba(0,255,231,.8)}
+.cb2{border:1px solid var(--c2);color:var(--c2);box-shadow:var(--g2)}
+.cb2:hover{background:rgba(255,45,120,.1);transform:translateY(-3px)}
+.hcard{border-radius:10px;overflow:hidden;border:1px solid rgba(0,255,231,.18);box-shadow:var(--g1);position:relative}
+.hcard img{width:100%;height:340px;object-fit:cover;filter:brightness(.6) saturate(1.2);display:block}
+.hcard-ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(2,8,16,.88) 0%,transparent 55%)}
+.scan{position:absolute;left:0;right:0;height:1.5px;background:linear-gradient(90deg,transparent,var(--c),transparent);animation:scanA 4s linear infinite;opacity:.4}
+@keyframes scanA{0%{top:0}100%{top:100%}}
+.hcorner{position:absolute;width:16px;height:16px;border-color:var(--c);border-style:solid;opacity:.7}
+.hcorner.tl{top:10px;left:10px;border-width:2px 0 0 2px}
+.hcorner.tr{top:10px;right:10px;border-width:2px 2px 0 0}
+.hcorner.bl{bottom:10px;left:10px;border-width:0 0 2px 2px}
+.hcorner.br{bottom:10px;right:10px;border-width:0 2px 2px 0}
+.hcard-info{position:absolute;bottom:1.2rem;left:1.2rem}
+.hcard-info h3{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:900;color:#fff}
+.hcard-info p{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--c);letter-spacing:1.5px;margin-top:3px}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);border:1px solid var(--border);max-width:1100px;margin:0 auto;position:relative;z-index:3}
+.si{background:var(--bg2);padding:1.3rem;text-align:center;transition:background .3s}
+.si:hover{background:rgba(0,255,231,.05)}
+.sn{font-family:'Orbitron',sans-serif;font-size:1.9rem;font-weight:900;color:var(--c);line-height:1}
+.sl{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(184,221,245,.42);letter-spacing:1.5px;text-transform:uppercase;margin-top:5px}
+
+/* ══ PROFIL ══ */
+.profil{background:linear-gradient(180deg,var(--bg) 0%,var(--bg2) 100%)}
+.profil-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start;margin-top:2.5rem}
+.profil-img{border-radius:10px;overflow:hidden;border:1px solid var(--border);position:relative}
+.profil-img img{width:100%;height:380px;object-fit:cover;filter:brightness(.62) saturate(1.2);display:block;transition:filter .5s}
+.profil-img:hover img{filter:brightness(.78) saturate(1.5)}
+.profil-img-ov{position:absolute;inset:0;background:linear-gradient(0deg,rgba(2,8,16,.7) 0%,transparent 50%)}
+.profil-tag{position:absolute;top:1rem;left:1rem;font-family:'Share Tech Mono',monospace;font-size:.62rem;padding:3px 9px;background:rgba(2,8,16,.88);border:1px solid var(--border);color:var(--c)}
+.profil-info{display:flex;flex-direction:column;gap:1.3rem}
+.profil-info p{color:rgba(184,221,245,.68);line-height:1.95;font-size:.9rem}
+.visi-misi{display:flex;flex-direction:column;gap:.8rem}
+.vm-item{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1rem 1.2rem;transition:all .3s}
+.vm-item:hover{border-color:var(--c);box-shadow:var(--g1)}
+.vm-item h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;color:var(--c);margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.vm-item p{font-size:.83rem;color:rgba(184,221,245,.6);line-height:1.8}
+.profil-detail{display:grid;grid-template-columns:1fr 1fr;gap:.7rem;margin-top:.5rem}
+.pd-item{background:var(--card);border:1px solid var(--border);border-radius:5px;padding:.85rem 1rem;transition:all .3s}
+.pd-item:hover{border-color:var(--c)}
+.pd-item .pd-label{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--c);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:.3rem}
+.pd-item .pd-val{font-size:.85rem;color:#fff;font-weight:600;font-family:'Rajdhani',sans-serif}
+
+/* ══ PENGURUS ══ */
+.pengurus{background:var(--bg2)}
+
+/* ORG CHART TREE */
+.org-tree{margin-top:2.5rem}
+.org-level{display:flex;justify-content:center;gap:1.5rem;flex-wrap:wrap;position:relative;margin-bottom:2rem}
+.org-level-label{text-align:center;font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(184,221,245,.35);letter-spacing:3px;text-transform:uppercase;margin-bottom:1.2rem;position:relative}
+.org-level-label::before,.org-level-label::after{content:'';display:inline-block;width:40px;height:1px;background:var(--border);vertical-align:middle;margin:0 10px}
+
+/* CONNECTOR LINES */
+.org-connector{display:flex;justify-content:center;margin:-1rem 0 1rem;position:relative}
+.org-connector::before{content:'';width:2px;height:2rem;background:linear-gradient(180deg,var(--c),transparent);opacity:.3}
+
+/* PHOTO CARDS */
+.pc{background:var(--card);border:1px solid var(--border);border-radius:10px;overflow:hidden;transition:all .35s;position:relative;text-align:center;width:180px}
+.pc:hover{border-color:var(--c);box-shadow:var(--g1);transform:translateY(-6px)}
+.pc-ketua{width:220px}
+.pc-photo{width:100%;height:150px;object-fit:cover;object-position:center top;display:block;filter:brightness(.7) saturate(1.2);transition:all .4s}
+.pc:hover .pc-photo{filter:brightness(.9) saturate(1.5)}
+.pc-photo-placeholder{width:100%;height:150px;display:flex;align-items:center;justify-content:center;font-family:'Orbitron',sans-serif;font-size:2rem;font-weight:900;color:#fff}
+.pc-scan{position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent);animation:scanA 3s linear infinite;opacity:.3}
+.pc-body{padding:.9rem 1rem 1.2rem}
+.pc-body h3{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.92rem;color:#fff;margin-bottom:3px;line-height:1.2}
+.pc-role{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--c);letter-spacing:1.5px;text-transform:uppercase}
+.pc-kls{font-size:.72rem;color:rgba(184,221,245,.36);margin-top:3px}
+.pc-num{position:absolute;top:8px;right:8px;font-family:'Orbitron',sans-serif;font-size:.55rem;color:rgba(0,255,231,.5);background:rgba(2,8,16,.7);padding:2px 6px;border:1px solid rgba(0,255,231,.15)}
+.pc-badge{position:absolute;top:8px;left:8px;font-family:'Share Tech Mono',monospace;font-size:.52rem;padding:2px 7px;border-radius:2px;letter-spacing:1px}
+.badge-ketua{background:rgba(255,224,0,.15);border:1px solid rgba(255,224,0,.4);color:var(--c3)}
+.badge-wakil{background:rgba(0,255,231,.1);border:1px solid rgba(0,255,231,.3);color:var(--c)}
+.badge-sek{background:rgba(0,170,255,.1);border:1px solid rgba(0,170,255,.3);color:var(--c4)}
+.badge-bend{background:rgba(255,45,120,.1);border:1px solid rgba(255,45,120,.3);color:var(--c2)}
+.badge-bid{background:rgba(127,255,0,.08);border:1px solid rgba(127,255,0,.25);color:var(--c5)}
+
+/* DIVISI SECTION */
+.divisi-section{margin-top:2rem}
+.divisi-header{display:flex;align-items:center;gap:1rem;margin-bottom:1.3rem}
+.divisi-header::before,.divisi-header::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--border),transparent)}
+.divisi-header span{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(184,221,245,.45);letter-spacing:3px;white-space:nowrap;padding:0 .5rem}
+.divisi-cards{display:flex;flex-wrap:wrap;gap:1rem;justify-content:center}
+
+/* ══ PROGRAM KERJA ══ */
+.proker{background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%)}
+.tabs{display:flex;gap:.5rem;flex-wrap:wrap;margin:1.8rem 0}
+.tab{padding:6px 15px;border-radius:2px;background:transparent;border:1px solid var(--border);color:var(--txt);font-family:'Share Tech Mono',monospace;font-size:.65rem;cursor:none;transition:all .3s;letter-spacing:1px}
+.tab.on,.tab:hover{border-color:var(--c);color:var(--c);background:rgba(0,255,231,.07)}
+.pk-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:1.2rem}
+.pk-card{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.5rem;transition:all .35s;position:relative;overflow:hidden}
+.pk-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--c),var(--c4));transform:scaleX(0);transform-origin:left;transition:.35s}
+.pk-card:hover::before{transform:scaleX(1)}
+.pk-card:hover{border-color:var(--c);box-shadow:var(--g1);transform:translateY(-4px)}
+.pk-ico{font-size:2rem;margin-bottom:.8rem}
+.pk-card h3{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:1.02rem;color:#fff;margin-bottom:.4rem}
+.pk-card p{font-size:.83rem;color:rgba(184,221,245,.58);line-height:1.75}
+.pk-meta{display:flex;align-items:center;justify-content:space-between;margin-top:1rem;padding-top:.8rem;border-top:1px solid rgba(0,255,231,.08)}
+.pk-waktu{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:rgba(184,221,245,.4)}
+.ptag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;font-family:'Share Tech Mono',monospace;font-size:.62rem;letter-spacing:1px;border-radius:2px}
+.tup{background:rgba(127,255,0,.07);border:1px solid rgba(127,255,0,.3);color:#7fff00}
+.tdone{background:rgba(0,255,231,.07);border:1px solid rgba(0,255,231,.3);color:var(--c)}
+.trun{background:rgba(255,45,120,.07);border:1px solid rgba(255,45,120,.3);color:var(--c2)}
+
+/* ══ KEGIATAN ══ */
+.kegiatan{background:var(--bg)}
+.kal-grid{display:grid;grid-template-columns:1fr 1fr;gap:2rem;margin-top:2.5rem}
+.kal-table{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.kal-head{background:rgba(0,255,231,.07);padding:1rem 1.4rem;border-bottom:1px solid var(--border);font-family:'Orbitron',sans-serif;font-size:.78rem;color:var(--c);letter-spacing:2px}
+.kal-item{padding:.9rem 1.4rem;border-bottom:1px solid rgba(0,255,231,.06);display:flex;align-items:center;gap:1rem;transition:background .2s}
+.kal-item:hover{background:rgba(0,255,231,.03)}
+.kal-item:last-child{border-bottom:none}
+.kal-date{min-width:48px;text-align:center;flex-shrink:0}
+.kal-date .kd{font-family:'Orbitron',sans-serif;font-size:1.2rem;font-weight:900;color:var(--c);line-height:1}
+.kal-date .km{font-family:'Share Tech Mono',monospace;font-size:.52rem;color:rgba(184,221,245,.4);letter-spacing:1px}
+.kal-info h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.93rem;color:#fff}
+.kal-info p{font-size:.78rem;color:rgba(184,221,245,.5);margin-top:2px}
+.kal-badge{margin-left:auto;font-family:'Share Tech Mono',monospace;font-size:.58rem;padding:2px 8px;border-radius:2px;white-space:nowrap;flex-shrink:0;background:rgba(0,255,231,.07);border:1px solid var(--border);color:var(--c)}
+.agenda-big{display:flex;flex-direction:column;gap:.8rem}
+.ab-card{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:1.2rem 1.4rem;transition:all .3s;cursor:none;display:flex;gap:1.2rem;align-items:center}
+.ab-card:hover{border-color:var(--c);box-shadow:var(--g1);transform:translateX(5px)}
+.ab-ico{width:44px;height:44px;border-radius:6px;background:rgba(0,255,231,.08);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.3rem;flex-shrink:0}
+.ab-card h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.95rem;color:#fff}
+.ab-card p{font-size:.78rem;color:rgba(184,221,245,.5);margin-top:2px}
+
+/* ══ BERITA ══ */
+.berita{background:var(--bg2)}
+.berita-grid{display:grid;grid-template-columns:1.7fr 1fr;gap:1.8rem;margin-top:2.5rem}
+.bn{background:var(--card);border:1px solid var(--border);border-radius:7px;overflow:hidden;transition:all .35s;cursor:none}
+.bn:hover{border-color:var(--c);box-shadow:var(--g1)}
+.bn-img{height:220px;position:relative;overflow:hidden}
+.bn-img img{width:100%;height:100%;object-fit:cover;filter:brightness(.5) saturate(1.1);display:block;transition:all .45s}
+.bn:hover .bn-img img{filter:brightness(.7) saturate(1.5);transform:scale(1.04)}
+.bn-io{position:absolute;inset:0;background:linear-gradient(0deg,rgba(2,8,16,.97) 0%,transparent 55%)}
+.bn-b{padding:1.3rem}
+.bn-cat{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--c);letter-spacing:2px;text-transform:uppercase}
+.bn-b h3{font-family:'Rajdhani',sans-serif;font-size:1.1rem;font-weight:700;color:#fff;margin:.3rem 0;line-height:1.4}
+.bn-b p{font-size:.82rem;color:rgba(184,221,245,.55);line-height:1.75}
+.bn-date{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:rgba(184,221,245,.35);margin-top:.7rem}
+.bn-side{display:flex;flex-direction:column;gap:.8rem}
+.bns{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1rem 1.1rem;transition:all .3s;cursor:none}
+.bns:hover{border-color:var(--c);transform:translateX(5px)}
+.bns-cat{font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--c);letter-spacing:1.5px;text-transform:uppercase}
+.bns h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.88rem;color:#fff;margin:.25rem 0;line-height:1.4}
+.bns-date{font-size:.7rem;color:rgba(184,221,245,.35)}
+
+/* ══ GALERI ══ */
+.galeri{background:var(--bg)}
+.gal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:.8rem;margin-top:2.5rem}
+.gi{border-radius:6px;overflow:hidden;border:1px solid var(--border);position:relative;cursor:none;transition:all .35s;aspect-ratio:4/3}
+.gi:hover{border-color:var(--c);box-shadow:var(--g1);transform:scale(1.02)}
+.gi img{width:100%;height:100%;object-fit:cover;filter:brightness(.55) saturate(1.1);display:block;transition:all .4s}
+.gi:hover img{filter:brightness(.82) saturate(1.6)}
+.gi-ov{position:absolute;inset:0;background:rgba(0,255,231,.05);opacity:0;transition:.3s}
+.gi:hover .gi-ov{opacity:1}
+.gi-lbl{position:absolute;bottom:7px;left:8px;font-family:'Share Tech Mono',monospace;font-size:.58rem;color:var(--c);background:rgba(2,8,16,.82);padding:2px 7px;opacity:0;transition:.3s}
+.gi:hover .gi-lbl{opacity:1}
+
+/* ══ EKSKUL ══ */
+.ekskul{background:var(--bg2)}
+.ek-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1.1rem;margin-top:2.5rem}
+.ec{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:1.5rem 1.2rem;transition:all .35s;text-align:center}
+.ec:hover{border-color:var(--c2);box-shadow:var(--g2);transform:translateY(-5px)}
+.ec-ico{font-size:2.2rem;margin-bottom:.7rem}
+.ec h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.97rem;color:#fff}
+.ec-hari{font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c);margin-top:.3rem;letter-spacing:1px}
+.ec-desc{font-size:.78rem;color:rgba(184,221,245,.42);margin-top:.3rem}
+
+/* ══ PRESTASI ══ */
+.prestasi{background:linear-gradient(180deg,var(--bg2) 0%,var(--bg) 100%)}
+.pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:1.2rem;margin-top:2.5rem}
+.prc{background:var(--card);border:1px solid var(--border);border-radius:7px;padding:1.4rem;display:flex;align-items:flex-start;gap:1rem;transition:all .35s}
+.prc:hover{border-color:var(--c3);box-shadow:var(--g3);transform:translateY(-4px)}
+.prc-ico{font-size:2rem;flex-shrink:0}
+.prc-info h4{font-family:'Rajdhani',sans-serif;font-weight:700;font-size:.93rem;color:#fff;line-height:1.4;margin-bottom:.35rem}
+.prc-lvl{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:var(--c3);letter-spacing:1px}
+.prc-yr{font-size:.7rem;color:rgba(184,221,245,.36);margin-top:3px}
+
+/* ══ ANGGOTA ══ */
+.anggota{background:var(--bg)}
+.anggota-wrap{display:grid;grid-template-columns:1fr 1.4fr;gap:2.5rem;margin-top:2.5rem;align-items:start}
+.angg-info{display:flex;flex-direction:column;gap:1.2rem}
+.angg-stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem}
+.angg-stat{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1.1rem;text-align:center;transition:all .3s}
+.angg-stat:hover{border-color:var(--c);box-shadow:var(--g1)}
+.angg-stat .asn{font-family:'Orbitron',sans-serif;font-size:1.6rem;font-weight:900;color:var(--c)}
+.angg-stat .asl{font-size:.72rem;color:rgba(184,221,245,.45);font-family:'Share Tech Mono',monospace;letter-spacing:1px;text-transform:uppercase;margin-top:3px}
+.angg-desc p{color:rgba(184,221,245,.65);font-size:.88rem;line-height:1.9}
+.angg-table{background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden}
+.angg-table table{width:100%;border-collapse:collapse}
+.angg-table thead{background:rgba(0,255,231,.07)}
+.angg-table th{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:var(--c);letter-spacing:1.5px;padding:.8rem 1.1rem;text-align:left;border-bottom:1px solid var(--border)}
+.angg-table td{font-size:.83rem;color:var(--txt);padding:.75rem 1.1rem;border-bottom:1px solid rgba(0,255,231,.05)}
+.angg-table tr:last-child td{border-bottom:none}
+.angg-table tr:hover td{background:rgba(0,255,231,.025)}
+.angg-table td:first-child{font-family:'Rajdhani',sans-serif;font-weight:700;color:#fff}
+.angg-table td:last-child{text-align:right;font-family:'Orbitron',sans-serif;font-size:.85rem;color:var(--c)}
+
+/* ══ KONTAK ══ */
+.kontak{background:var(--bg2)}
+.kontak-grid{display:grid;grid-template-columns:1fr 1fr;gap:3rem;margin-top:2.5rem;align-items:start}
+.kon-info{display:flex;flex-direction:column;gap:.8rem}
+.kon-item{background:var(--card);border:1px solid var(--border);border-radius:6px;padding:1rem 1.3rem;display:flex;align-items:center;gap:1rem;transition:all .3s}
+.kon-item:hover{border-color:var(--c);box-shadow:var(--g1)}
+.kon-item i{font-size:1.1rem;color:var(--c);width:20px;flex-shrink:0}
+.kon-item span{font-size:.87rem;color:var(--txt)}
+.kon-form{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:2rem;position:relative;overflow:hidden}
+.kon-form::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent)}
+.kon-form h3{font-family:'Orbitron',sans-serif;font-size:.95rem;color:#fff;margin-bottom:1.3rem;letter-spacing:1px}
+.fg{margin-bottom:1rem}
+.fg label{display:block;font-family:'Share Tech Mono',monospace;font-size:.63rem;color:var(--c);letter-spacing:2px;text-transform:uppercase;margin-bottom:5px}
+.fg input,.fg textarea,.fg select{width:100%;background:rgba(0,255,231,.03);border:1px solid var(--border);border-radius:3px;padding:9px 12px;color:var(--txt);font-family:'Exo 2',sans-serif;font-size:.87rem;outline:none;transition:border-color .3s;resize:none}
+.fg input:focus,.fg textarea:focus,.fg select:focus{border-color:var(--c);box-shadow:0 0 15px rgba(0,255,231,.25)}
+.fg select option{background:var(--bg2);color:var(--txt)}
+.fg textarea{height:90px}
+.bsend{width:100%;padding:11px;border-radius:3px;background:linear-gradient(90deg,var(--c),var(--c4));color:#000;font-family:'Orbitron',sans-serif;font-size:.73rem;font-weight:700;border:none;cursor:none;letter-spacing:2px;box-shadow:var(--g1);transition:all .3s}
+.bsend:hover{transform:translateY(-2px);box-shadow:0 0 45px rgba(0,255,231,.7)}
+.map-box{background:var(--card);border:1px solid var(--border);border-radius:6px;overflow:hidden;height:220px;display:flex;align-items:center;justify-content:center;margin-top:1rem;position:relative}
+.map-box iframe{width:100%;height:100%;border:none;filter:grayscale(1) brightness(.6) contrast(1.1)}
+.map-ov{position:absolute;inset:0;pointer-events:none;border:1px solid rgba(0,255,231,.1)}
+
+/* SOSMED BAR */
+.sosmed-bar{background:rgba(0,255,231,.03);border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:1.2rem 2rem;position:relative;z-index:1;overflow:hidden}
+.sosmed-inner{max-width:1100px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:1rem}
+.sosmed-txt{font-family:'Share Tech Mono',monospace;font-size:.65rem;color:rgba(184,221,245,.45);letter-spacing:2px}
+.sosmed-links{display:flex;gap:.6rem}
+.sosmed-links a{display:flex;align-items:center;gap:6px;padding:6px 14px;border-radius:3px;border:1px solid var(--border);color:var(--txt);text-decoration:none;font-family:'Share Tech Mono',monospace;font-size:.65rem;letter-spacing:1px;transition:all .3s;cursor:none}
+.sosmed-links a:hover{border-color:var(--c);color:var(--c);background:rgba(0,255,231,.07)}
+
+/* FOOTER */
+footer{background:var(--bg);border-top:1px solid var(--border);padding:3rem 2rem 1.5rem;position:relative;z-index:1}
+footer::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--c),transparent)}
+.foot-inner{max-width:1100px;margin:0 auto}
+.foot-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:2.5rem;margin-bottom:2rem}
+.fb h3{font-family:'Orbitron',sans-serif;font-size:.9rem;font-weight:900;color:#fff;margin-bottom:.7rem}
+.fb p{font-size:.82rem;color:rgba(184,221,245,.45);line-height:1.9}
+.socs{display:flex;gap:.5rem;margin-top:.9rem}
+.socs a{width:32px;height:32px;border-radius:4px;background:var(--card);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--txt);font-size:.85rem;transition:all .3s;cursor:none}
+.socs a:hover{border-color:var(--c);color:var(--c);box-shadow:var(--g1)}
+.fc h4{font-family:'Share Tech Mono',monospace;font-size:.62rem;color:#fff;letter-spacing:2px;text-transform:uppercase;margin-bottom:.9rem}
+.fc a{display:block;color:rgba(184,221,245,.4);text-decoration:none;font-size:.82rem;margin-bottom:.42rem;transition:color .2s;cursor:none}
+.fc a:hover{color:var(--c)}
+.foot-bot{border-top:1px solid var(--border);padding-top:1.3rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.7rem}
+.foot-bot p{font-family:'Share Tech Mono',monospace;font-size:.6rem;color:rgba(184,221,245,.28)}
+.foot-bot span{color:var(--c)}
+
+/* LIGHTBOX */
+#lb{display:none;position:fixed;inset:0;background:rgba(2,8,16,.97);z-index:99990;align-items:center;justify-content:center;cursor:none}
+#lb.show{display:flex}
+#lb img{max-width:90vw;max-height:88vh;border-radius:7px;border:1px solid var(--border);box-shadow:var(--g1)}
+.lb-close{position:absolute;top:1.5rem;right:1.5rem;color:var(--c);font-size:1.4rem;cursor:none}
+
+/* BACK TO TOP */
+#btt{position:fixed;bottom:2rem;right:2rem;width:40px;height:40px;background:rgba(0,255,231,.1);border:1px solid var(--c);border-radius:4px;display:flex;align-items:center;justify-content:center;color:var(--c);cursor:none;z-index:800;opacity:0;transition:all .3s;pointer-events:none}
+#btt.show{opacity:1;pointer-events:auto}
+#btt:hover{background:rgba(0,255,231,.2);box-shadow:var(--g1)}
+
+/* MOBILE */
+@media(max-width:920px){
+  .nlinks{display:none;position:fixed;top:66px;left:0;right:0;flex-direction:column;background:rgba(2,8,16,.98);padding:1.3rem;gap:.2rem;border-bottom:1px solid var(--border);max-height:calc(100vh - 66px);overflow-y:auto}
+  .nlinks.open{display:flex}
+  .ham{display:flex}
+  .hero-inner,.profil-grid,.kal-grid,.berita-grid,.anggota-wrap,.kontak-grid{grid-template-columns:1fr}
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .foot-top{grid-template-columns:1fr 1fr}
+  .gal-grid{grid-template-columns:repeat(2,1fr)}
+  .hud{display:none}
+  .org-level{gap:1rem}
+  .pc{width:150px}
+  .pc-ketua{width:180px}
+}
+@media(max-width:580px){
+  .foot-top{grid-template-columns:1fr}
+  .htitle{font-size:1.9rem}
+  .angg-stat-grid{grid-template-columns:1fr 1fr}
+  .pc{width:140px}
+}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="ldr">
+  <div class="ldr-logo">OSIS // IHSANNIAT</div>
+  <div class="ldr-bar"><div class="ldr-fill" id="lfill"></div></div>
+  <div class="ldr-txt" id="ltxt">MEMUAT SISTEM...</div>
+</div>
+
+<canvas id="bgc"></canvas>
+<div id="cur"></div><div id="cur2"></div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="hi">SYS_TIME: <span class="hv" id="htime">--:--:--</span></div>
+  <div class="hi">STATUS: <span class="hv" style="color:var(--c5)">ONLINE</span></div>
+  <div class="hi">SCROLL: <span class="hv" id="hscr">000</span>px</div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="nav">
+  <a href="#beranda" class="nlogo">
+    <div class="nhex"><i class="fas fa-graduation-cap"></i></div>
+    <div>
+      <div class="nltxt">OSIS SMK IHSANNIAT</div>
+      <div class="nlsub">Ngoro · Jombang</div>
+    </div>
+  </a>
+  <div class="nlinks" id="nl">
+    <a href="#beranda">Beranda</a>
+    <a href="#profil">Profil</a>
+    <a href="#pengurus">Pengurus</a>
+    <a href="#proker">Program Kerja</a>
+    <a href="#kegiatan">Kegiatan</a>
+    <a href="#berita">Berita</a>
+    <a href="#galeri">Galeri</a>
+    <a href="#ekskul">Ekskul</a>
+    <a href="#prestasi">Prestasi</a>
+    <a href="#anggota">Anggota</a>
+    <a href="#kontak" class="nbtn">[ KONTAK ]</a>
+  </div>
+  <div class="ham" id="ham" onclick="document.getElementById('nl').classList.toggle('open')">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- ══ BERANDA ══ -->
+<section id="beranda" class="hero">
+  <div class="hero-bg">
+    <img src="https://images.unsplash.com/photo-1562774053-701939374585?w=1600&q=80" alt="">
+  </div>
+  <div class="hero-ov"></div>
+  <div class="hero-gl"></div>
+  <div class="hero-inner">
+    <div>
+      <div class="badge"><span class="ldot"></span>OSIS AKTIF · PERIODE 2025/2026</div>
+      <h1 class="htitle">
+        <span class="ht1">OSIS SMK</span>
+        <span class="ht2" data-t="IHSANNIAT">IHSANNIAT</span>
+      </h1>
+      <p class="hschool">Ngoro — <em>Jombang</em> — Jawa Timur</p>
+      <p class="hdesc">Bersatu, Berkarya, dan Berprestasi. Mewujudkan generasi unggul berkarakter islami dan berdaya saing tinggi untuk masa depan Indonesia.</p>
+      <div class="hbtns">
+        <a href="#proker" class="cb cb1"><i class="fas fa-rocket"></i> PROGRAM KERJA</a>
+        <a href="#profil" class="cb cb2"><i class="fas fa-info-circle"></i> PROFIL OSIS</a>
+      </div>
+    </div>
+    <div>
+      <div class="hcard">
+        <div class="scan"></div>
+        <img src="https://img.laduni.id/uploads/post/2018/12-05/49512/smkihsn.jpg?p=medium" alt="Siswa SMK Ihsanniat">
+        <div class="hcard-ov"></div>
+        <div class="hcorner tl"></div><div class="hcorner tr"></div>
+        <div class="hcorner bl"></div><div class="hcorner br"></div>
+        <div class="hcard-info">
+          <h3>SMK IHSANNIAT NGORO</h3>
+          <p>// OSIS PERIODE 2025 / 2026</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="stats rv">
+    <div class="si"><div class="sn" data-t="32">0</div><div class="sl">ANGGOTA</div></div>
+    <div class="si"><div class="sn" data-t="24">0</div><div class="sl">PROGRAM KERJA</div></div>
+    <div class="si"><div class="sn" data-t="18">0</div><div class="sl">PRESTASI</div></div>
+    <div class="si"><div class="sn" data-t="10">0</div><div class="sl">EKSKUL</div></div>
+  </div>
+</section>
+
+<!-- ══ PROFIL OSIS ══ -->
+<section id="profil" class="profil">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">PROFIL ORGANISASI</div>
+      <h2 class="stit">Profil <span>OSIS</span></h2>
+    </div>
+    <div class="profil-grid">
+      <div class="profil-img rvl">
+        <img src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/566243033_18038133578701821_5688283010994229065_n.webp?_nc_cat=105&ig_cache_key=Mzc0NjY3MjkxNjA1NTY3MDU5Ng%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&_nc_ohc=zzJ_Oc9MGdoQ7kNvwFnE6c9&_nc_oc=Adqn8WS2AjOiqJm3Ygy5DNJ_tIPXwIE5IY40jd3EWYmO0DEo0o2NIy85d5sp4cwZCGw&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fsub8-2.fna&_nc_gid=7wG6TlkzbANCT0jE4jfjiA&_nc_ss=7a22e&oh=00_Af4FWEmjtI_n1c1_ZKeMfkvdH-aRQIDBd4zuT-dJE23R3w&oe=6A0886C9" alt="Kegiatan Siswa" onerror="this.src='https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=600&q=80'">
+        <div class="profil-img-ov"></div>
+        <div class="profil-tag">// SMK IHSANNIAT NGORO</div>
+      </div>
+      <div class="profil-info rvr">
+        <p>Organisasi Siswa Intra Sekolah (OSIS) SMK Ihsanniat Ngoro Jombang adalah organisasi resmi yang menjadi wadah bagi seluruh siswa untuk mengembangkan potensi, bakat, dan jiwa kepemimpinan di lingkungan sekolah berkarakter islami.</p>
+        <div class="profil-detail">
+          <div class="pd-item"><div class="pd-label">Nama Sekolah</div><div class="pd-val">SMK Ihsanniat</div></div>
+          <div class="pd-item"><div class="pd-label">Alamat</div><div class="pd-val">Ngoro, Jombang</div></div>
+          <div class="pd-item"><div class="pd-label">Akreditasi</div><div class="pd-val">A (Sangat Baik)</div></div>
+          <div class="pd-item"><div class="pd-label">Periode OSIS</div><div class="pd-val">2025 / 2026</div></div>
+        </div>
+        <div class="visi-misi">
+          <div class="vm-item">
+            <h4><i class="fas fa-eye"></i> VISI</h4>
+            <p>Menjadi OSIS yang unggul, mandiri, inovatif, dan berkarakter islami dalam mewujudkan potensi siswa secara optimal.</p>
+          </div>
+          <div class="vm-item">
+            <h4><i class="fas fa-flag"></i> MISI</h4>
+            <p>Mengembangkan potensi akademik dan non-akademik siswa secara holistik, terprogram, dan berkelanjutan demi kemajuan SMK Ihsanniat.</p>
+          </div>
+          <div class="vm-item">
+            <h4><i class="fas fa-star"></i> TUJUAN</h4>
+            <p>Membentuk pribadi siswa yang berakhlak mulia, kompeten di bidangnya, dan mampu bersaing di tingkat daerah maupun nasional.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PENGURUS ══ -->
+<section id="pengurus" class="pengurus">
+  <div class="sec">
+    <div class="rv" style="text-align:center">
+      <div class="stag">STRUKTUR ORGANISASI</div>
+      <h2 class="stit">Pengurus <span>OSIS 2025/2026</span></h2>
+      <p class="sdesc" style="margin:0 auto">Tim pengurus berdedikasi yang siap melayani seluruh siswa SMK Ihsanniat Ngoro Jombang.</p>
+    </div>
+
+    <div class="org-tree">
+
+      <!-- KETUA -->
+      <div class="org-level-label rv">— KETUA OSIS —</div>
+      <div class="org-level rv">
+        <div class="pc pc-ketua">
+          <div class="pc-scan"></div>
+          <div class="pc-badge badge-ketua">KETUA</div>
+          <div class="pc-num">01</div>
+          <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/690111978_17897301936448381_7617055880494988165_n.jpg?stp=dst-jpg_e35_tt6&amp;_nc_cat=101&amp;ig_cache_key=Mzg5NTgyODA0OTM4NDU2NzkzNg%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuNDYwLnNkci5yZWd1bGFyX3Bob3RvLkMzIn0%3D&amp;_nc_ohc=Dk8Y547heakQ7kNvwFBapkj&amp;_nc_oc=AdqIK8mQoIUI5Mr0GZSQMqAJvGr0gXJvLSnVNRphYpB8edXZD-1SyVfO32h-NKONOik&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=Dg0NGgous41OZdHgZdZ8YQ&amp;_nc_ss=7a22e&amp;oh=00_Af58SszDOz0bLaPRKpLo5SoOkMFcjNe2n-CpjyW126yDrA&amp;oe=6A099A5D" alt="Muhammad Rifqi Al faizi" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,var(--c),#0060a0)">MRA</div>
+          <div class="pc-body">
+            <h3>Muhammad Rifqi Al faizi</h3>
+            <div class="pc-role">KETUA OSIS</div>
+            <div class="pc-kls">XI TKJ 1</div>
+          </div>
+        </div>
+      </div>
+      <div class="org-level-label rv">— WAKIL KETUA OSIS —</div>
+      <div class="org-level rv">
+        <div class="pc pc-ketua">
+        <div class="pc-scan"></div>
+        <div class="pc-badge badge-ketua">KETUA</div>
+        <div class="pc-num">01</div>
+        <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/686449668_17897302077448381_4761643704012615428_n.jpg?stp=dst-jpg_e35_tt6&amp;_nc_cat=100&amp;ig_cache_key=Mzg5NTgyOTA0MDg1OTI4NTk3MA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkZFRUQueHBpZHMuNDQ1LnNkci5yZWd1bGFyX3Bob3RvLkMzIn0%3D&amp;_nc_ohc=sEqZtTZ4osYQ7kNvwE3PlNV&amp;_nc_oc=AdqIRirCkW-R5LLRCWzI6a8LFkuzeeSVoBmgRtJRgR2onQzm5ULRS6U6IK9HlgbqSKY&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=lwXCqk-viXS4l6MzlV_Psg&amp;_nc_ss=7a22e&amp;oh=00_Af5akWz5e20iKJvR3bEqP1CaCCTPCTePClw6oqmQGZdK6g&amp;oe=6A09AB2A" alt="Muhammad Rifqi Al faizi" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,var(--c),#0060a0)">MRA</div>
+        <div class="pc-body">
+          <h3>Silvi khiyarotil </h3>
+          <div class="pc-role">WAKIL KETUA OSIS</div>
+          <div class="pc-kls">X MPLB 1</div>
+    </div>
+  </div>
+</div>
+
+      <!-- CONNECTOR -->
+      <div class="org-connector rv"></div>
+
+      <!-- WAKIL & SEKRETARIS -->
+      <div class="org-level-label rv">— WAKIL KETUA &amp; SEKRETARIAT —</div>
+      <div class="org-level rv">
+        <div class="pc">
+          <div class="pc-scan"></div>
+          <div class="pc-badge badge-sek">SEK I</div>
+          <div class="pc-num">03</div>
+          <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/625189851_18049906913701821_5237193767675021099_n.webp?_nc_cat=105&amp;ig_cache_key=MzgyMTkzMDYzNDQ4MzU5MTA0Ng%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=IRbDrbGnGUEQ7kNvwFkBEXu&amp;_nc_oc=AdomM55J3gi1FcGMP7W1iJwnUL54lALlDb_L_4Wl9mTDKyb9VpxDr_W6RhNOqCiVEUs&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=UIzVTifJV5Cq777NXHTs-A&amp;_nc_ss=7a22e&amp;oh=00_Af42W2D_wUb-7ECJeLEAi4TcEGmWW0IFbDTjUnvJclOd9g&amp;oe=6A09A7E5" alt="Rizky Pratama" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#7fff00,#3a7000)">RP</div>
+          <div class="pc-body"><h3>M IDHOM SIDQI</h3><div class="pc-role">SEKRETARIS I</div><div class="pc-kls">XI TKJ </div></div>
+        </div>
+        <div class="pc">
+          <div class="pc-scan"></div>
+          <div class="pc-badge badge-sek">SEK II</div>
+          <div class="pc-num">04</div>
+          <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/624736407_18049906922701821_4706252224949873666_n.webp?_nc_cat=104&amp;ig_cache_key=MzgyMTkzMDY0MTM1MzgxMDYzOQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=nnxrd_vY7aYQ7kNvwFd3WAV&amp;_nc_oc=AdouXM721IRgFGTDbBeH49UGN68jA7cSQBVa1IQuPtE667cyF7GW92Z7_gOaSi6X-iQ&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=UIzVTifJV5Cq777NXHTs-A&amp;_nc_ss=7a22e&amp;oh=00_Af73Whz6L6uztsExW99aTzhx23UeygxcWzvlQ3DKldcj2Q&amp;oe=6A0998DA" alt="Nadia Safitri" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff00aa,#770044)">NS</div>
+          <div class="pc-body"><h3>RIZKI AFIAH F G</h3><div class="pc-role">SEKRETARIS II</div><div class="pc-kls">XI MPLB</div></div>
+        </div>
+        <div class="pc">
+          <div class="pc-scan"></div>
+          <div class="pc-badge badge-bend">BEND I</div>
+          <div class="pc-num">05</div>
+          <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/623806025_18049906931701821_2313533999080484392_n.webp?_nc_cat=105&amp;ig_cache_key=MzgyMTkzMDY0ODcxMDY0NDQ2OQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=9xwZIkM53IEQ7kNvwEldzQA&amp;_nc_oc=AdqiNPQYDeVoa4L-XEVoYjvn8PMoETZ7oFHG4EXoP6MkHYPksytB-BGDd-gStwm9scY&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=UIzVTifJV5Cq777NXHTs-A&amp;_nc_ss=7a22e&amp;oh=00_Af44MHHUSHMUU4Ne7ebKKis4W6avSecJV2FFLxrcDLP2gQ&amp;oe=6A09B1E7" alt="M. Yusuf" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,var(--c3),#8a6000)">MY</div>
+          <div class="pc-body"><h3>M RASYID LAFASI</h3><div class="pc-role">BENDAHARA I</div><div class="pc-kls">XI TKJ</div></div>
+        </div>
+        <div class="pc">
+          <div class="pc-scan"></div>
+          <div class="pc-badge badge-bend">BEND II</div>
+          <div class="pc-num">06</div>
+          <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/625122878_18049906946701821_1446270405426048929_n.webp?_nc_cat=104&amp;ig_cache_key=MzgyMTkzMDY1NTc5OTAwMTkyOQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=hBYvQc8njkgQ7kNvwHlVAls&amp;_nc_oc=AdrAFT-UsC_MmjsU_BP00rmErHQsYhctxOhX1WaPenqLl9DDihahCr04g3PkAzO-Wiw&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=UIzVTifJV5Cq777NXHTs-A&amp;_nc_ss=7a22e&amp;oh=00_Af5bzYuL7CI36Rp-dM_2IY1rKuwX-_p5PnabVb3oofyMLA&amp;oe=6A09B370" alt="Fatimah Az-Zahra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+          <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ffcc,#006644)">FA</div>
+          <div class="pc-body"><h3>AFNI JULIA V</h3><div class="pc-role">BENDAHARA II</div><div class="pc-kls">XI LPKC</div></div>
+        </div>
+      </div>
+
+      <!-- CONNECTOR -->
+      <div class="org-connector rv"></div>
+
+      <!-- BIDANG-BIDANG -->
+      <div class="org-level-label rv">— KOORDINATOR BIDANG —</div>
+
+      <!-- BIDANG AKADEMIK -->
+      <div class="divisi-section rv">
+        <div class="divisi-header">
+          <span>🎓 BIDANG HUMASY &amp; KEWIRAUSAHAAN</span>
+        </div>
+        <div class="divisi-cards">
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">07</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/620722246_18048688103701821_7117923823354787693_n.webp?_nc_cat=110&amp;ig_cache_key=MzgxNDY2MjM0MTMxMzg4OTI3Nw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=-DQLBZDKxvIQ7kNvwF3Y2cp&amp;_nc_oc=AdqNhYdEy3fpWFTT_9nvH9Itaz-0k01m2WPo0NBUsenSYFHFLruKbt18NLReXwp8huU&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=fwxbuCi9viEacMbFH5SQuw&amp;_nc_ss=7a22e&amp;oh=00_Af70KFeLG9GXHjUmwEjxjfWxMuMLdnZ-zD7f1E5LwrG2kw&amp;oe=6A098D50" alt="Dimas Ariyanto" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#aa00ff,#440066)">DA</div>
+            <div class="pc-body"><h3>ALFIN ADILA RIZKI</h3><div class="pc-role">BID. HUMASY 1  </div><div class="pc-kls">XI TKJ 1</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">08</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/619518157_18048688112701821_4891942245745359279_n.webp?_nc_cat=108&amp;ig_cache_key=MzgxNDY2MjM0MTEwNDIxNjM4Mw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=kVu3lehTivkQ7kNvwGW3Yex&amp;_nc_oc=AdpQk10-ZzNoFYL5YZI11ZzvhBRL7vVMJ_UaMdOaeHuosEwXUklLX6DkRkdVa_VhVyo&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=fwxbuCi9viEacMbFH5SQuw&amp;_nc_ss=7a22e&amp;oh=00_Af5DoXZ7IB44mlCF6w0VH2J0Bj_QYIksd9Tg7ApmjOj4HA&amp;oe=6A098931" alt="Laila Azzahra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00c8ff,#004488)">LA</div>
+            <div class="pc-body"><h3>ATNAN ROIS Z</h3><div class="pc-role">BID. HUMASY 2</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">09</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/620392544_18048688307701821_3005627087010363685_n.webp?_nc_cat=110&amp;ig_cache_key=MzgxNDY2MzY4MzE3MjQxOTY3NQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=_bUOjlVoiFcQ7kNvwFjQU1l&amp;_nc_oc=Ado2RPglmZAfNkfzEjXF_hIj-IGFMbbVln1Hju-1ATINqQWul6beTwg17DxaWWk75SU&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=v0x5a9emtU1Awct-2akn7Q&amp;_nc_ss=7a22e&amp;oh=00_Af5DB16x8teUTs8dqmtihK4D9pTq5T2ipHGd33KjKtzHwQ&amp;oe=6A0985DB" alt="Laila Azzahra" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;backround:linear-gradien(135deg,#00c8ff,#004488,)">LA</div>
+            <div class="pc-body"><h3>MIFTAHUL ULUM</h3><div class="pc-role">BID KEWIRAUSAHAAN</div><div class="pc-kls">X TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619427101_18048688316701821_3813285974415425247_n.webp?_nc_cat=102&amp;ig_cache_key=MzgxNDY2MzY4MzE3MjQxNzAxMw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=YNeOdzNmRTIQ7kNvwEKTiuM&amp;_nc_oc=AdrRhqI61piQ3RMnhDDuP110s9-pLvXxKwmf5hzXreggXy8BL8h4uCxhK7_EMVetJEo&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=v0x5a9emtU1Awct-2akn7Q&amp;_nc_ss=7a22e&amp;oh=00_Af4COg-Tt3x7wjCA9KlMtgVAMV4qEGHYSrGcCFMeXAFOIQ&amp;oe=6A099601" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;backround:linear-gradien(135,#00c8ff,#004488,)">LA</div>
+            <div class="pc-body"><h3>HILMA NISAUL HUSNA</h3><div class="pc-role">BID KEWIRAUSAHAAN</div><div class="pc-kls">XI MPLB</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">11</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619492356_18048688325701821_3792371442367208226_n.webp?_nc_cat=102&amp;ig_cache_key=MzgxNDY2MzY4MzI4OTg5ODU3Mw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=MvrqBeKKgC4Q7kNvwHe3qvn&amp;_nc_oc=AdpwoOEWQRMVE6r3FMrlpUiH-Q82yQCTI-v5dWjIC37iT4LCYQQL4sghTU-h-Pm8sYA&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=yEBX7Xyod1OTyuAyCfUrIg&amp;_nc_ss=7a22e&amp;oh=00_Af5FdNRG0A_Sz4cIeLVdjf3diMW6HAiYAdHvrlVA_pvgyg&amp;oe=6A09ABB8" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;backround:liner-gradien(135deg,#00c8ff,#004488,)">LA</div>
+            <div class="pc-body"><h3>LAILY OKTA LILLAH</h3><div class="pc-role">BID KEWIRAUSAHAAN</div><div class="pc-kls">X MPLB</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">12</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619202181_18048688334701821_2947169257571703233_n.webp?_nc_cat=103&amp;ig_cache_key=MzgxNDY2MzY4MzQ2NjA1Mjg3MQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=G2I0HrBTb2gQ7kNvwHo-apQ&amp;_nc_oc=Ado8T6ARzvwjYYMSgxAbJi91JqL5-zrfPaWTwz0hBzcpiXXkcEU0LfrtrDjFYOjf3cU&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=yEBX7Xyod1OTyuAyCfUrIg&amp;_nc_ss=7a22e&amp;oh=00_Af6Va-W5bWdWG1lAxLeXXsvb3EhF4YgA-PDOxmjWb3vF_g&amp;oe=6A09905B" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;backround:linera-gradien(135,#00c8ff,#004488,)">LA</div>
+            <div class="pc-body"><h3>NESYA ANDIRA</h3><div class="pc-role">BID KEWIRAUSAHAAN</div><div class="pc-kls">X MPLB</div></div>
+          </div>
+          <div>
+        </div>
+      </div>
+
+      <!-- BIDANG OLAHRAGA & KESEHATAN -->
+      <div class="divisi-section rv">
+        <div class="divisi-header">
+          <span>⚽ BIDANG OLAHRAGA &amp; KEBERSIHAN</span>
+        </div>
+        <div class="divisi-cards">
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">09</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619882304_18048688250701821_7755012659775089588_n.webp?_nc_cat=103&amp;ig_cache_key=MzgxNDY2MzM1ODUzMzMyNjU4Nw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=X0kOEhGGHJkQ7kNvwEzoVU6&amp;_nc_oc=Adr_MA3K6IScZUzMj50c-RTnEFSJr0rwiKzvkk7kpecX1gCJFpQZksdPMe2i2SqJr1c&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=R_B04_IjlPYVS20dH1UvCg&amp;_nc_ss=7a22e&amp;oh=00_Af7Z-aldZ39uFtomOGVkiZM4FD8nc0bWVng0zxR03fOJ8A&amp;oe=6A09BBB7" alt="Indah Permata" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff4444,#880000)">IP</div>
+            <div class="pc-body"><h3>A ZUHA WAHIDIZZAMAN</h3><div class="pc-role">BID. OLAHRAGA 1</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619951392_18048688268701821_6290247267207790991_n.webp?_nc_cat=102&amp;ig_cache_key=MzgxNDY2MzM1ODY5MjcxODYyNg%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=_kgJbIcSbxwQ7kNvwFy1y1Z&amp;_nc_oc=AdoMz0z0FyCDhG7xhGjhJwSv9ldeH5cYKhgp0H2bNYNgdmZwFx2GYzMs5F6pCsCQogg&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=R_B04_IjlPYVS20dH1UvCg&amp;_nc_ss=7a22e&amp;oh=00_Af5-sLB4y6RM_Y1J6R6HUgZ_f_zQE5NT5UQvG6kwpCMjOQ&amp;oe=6A09C479" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>BAMBANG IRAWAN</h3><div class="pc-role">BID. OLAHRAGA 2</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/619606122_18048688277701821_7270960611882838723_n.webp?_nc_cat=105&amp;ig_cache_key=MzgxNDY2MzM1ODU0MTY2OTEyNw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=GlcHhbcnVloQ7kNvwF6ADc1&amp;_nc_oc=AdrAT_UnADuj-y7AbZvgJ0lw3MfBI8ahfr7rfsF09pvYO16UgaGjc2rIlszK8ZYUaCc&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=R_B04_IjlPYVS20dH1UvCg&amp;_nc_ss=7a22e&amp;oh=00_Af43M3dmKxccHJe-_6DQe8OXdcLtUc1g1bZ8O6WduC8yvA&amp;oe=6A09A8CA" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>CANDDRA PRATAMA</h3><div class="pc-role">BID. OLAHRAGA 3</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/624476808_18049906790701821_235740238892171805_n.webp?_nc_cat=102&amp;ig_cache_key=MzgyMTkyOTk4NDkwMzMxOTI2OA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=-kpxGsKWeBwQ7kNvwHGa-vs&amp;_nc_oc=Ado4unv3Z5A24OXc8qEH9wtR6coc2W5WXFG9gNRmCTpmzfMo7pE3AB_3_vkTYAGguqI&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=5WbVSOQfj7TJA3BBojr0Tg&amp;_nc_ss=7a22e&amp;oh=00_Af77X54bHaW8AVxGPJ8hpCBnOWAV27kaXgEuSwzhM7w2Iw&amp;oe=6A09B8B8" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>AHMAD HANDI S</h3><div class="pc-role">BID. KEBESIHAN 1</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/624162646_18049906805701821_984057984822924828_n.webp?_nc_cat=104&amp;ig_cache_key=MzgyMTkyOTk5MjY2Mjc2NTk0OQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=moKD0bSXZrMQ7kNvwHzcVhd&amp;_nc_oc=AdpnrRJPNlJEZc_soUyOjymEhbcC_3wpMw5RWdJ7gTNMKfiIR1F8SR_QgqXhdQIMHrM&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=5WbVSOQfj7TJA3BBojr0Tg&amp;_nc_ss=7a22e&amp;oh=00_Af4xDz0Og07XcO1H1QMZJoP0HnYYP_HbaHsPefekBtuKUQ&amp;oe=6A099FC0" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>DZAKIYAH RAFIFAH</h3><div class="pc-role">BID. KEBERSIHAN 2</div><div class="pc-kls">XI LPKC</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/624635410_18049906814701821_5172857613316880257_n.webp?_nc_cat=111&amp;ig_cache_key=MzgyMTkyOTk5OTQ5MTEzNTk4NQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=62kTyBfv8s4Q7kNvwGmY9a8&amp;_nc_oc=AdpnWmp5cFTcvWqlGLvzQyJSy-r8rd_mUTEl9ZTV25X_XYc1AOC7IxbdT6Xbhdhf6HY&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=5WbVSOQfj7TJA3BBojr0Tg&amp;_nc_ss=7a22e&amp;oh=00_Af59l6QcjM0SzzJC1j3pl19JH-__uAWkC-XNe3JgyjmCdg&amp;oe=6A09B89B" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>M U HASBI A</h3><div class="pc-role">BID. KEBERSIHAN 3</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/626419066_18049906823701821_3465602366537947113_n.webp?_nc_cat=102&amp;ig_cache_key=MzgyMTkzMDAwNTg0OTY2MTIxOQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=1IlUucsN9NEQ7kNvwF3s8_T&amp;_nc_oc=AdpwKopl7HbbTIAeyFQK8Bv0OgSx8b7PJzIN7DhidpX77p6ACeyCR1muAm6ye_7RgsI&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=5WbVSOQfj7TJA3BBojr0Tg&amp;_nc_ss=7a22e&amp;oh=00_Af4v1gzsGPCDZ-CKR4BYrduZ6xYzpTdKf4LFvUWyRXi58A&amp;oe=6A09967C" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>NUR AINI ERIKA P</h3><div class="pc-role">BID. KEBERSIHAN 4</div><div class="pc-kls">XI LPKC</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">10</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/624512292_18049906832701821_915376790960829265_n.webp?_nc_cat=107&amp;ig_cache_key=MzgyMTkzMDAxMzUwMDA5NzIxMw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=1YoH793PkE8Q7kNvwEGpSb7&amp;_nc_oc=Adr_HVgsarqkPh62w7E0HNPuRAiqcSZB4SE6YcJxeFASE3aRDgUqZAg4lGb6KqpYQ9A&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=5WbVSOQfj7TJA3BBojr0Tg&amp;_nc_ss=7a22e&amp;oh=00_Af6bdsYtAGaHOc384oXIqlh_iZQW7-dsB9qVz7XSX-O4Gg&amp;oe=6A09B426" alt="Dewi Maharani" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ff8800,#883300)">DM</div>
+            <div class="pc-body"><h3>ADAM ALKHIQNI B</h3><div class="pc-role">BID. KEBERSIHAN 5</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- BIDANG KEROHANIAN & SOSIAL -->
+      <div class="divisi-section rv">
+        <div class="divisi-header">
+          <span>🕌 BIDANG KREATIFITAS &amp; JURNALISTIK &amp; EVENTORGANIZER </span>
+        </div>
+        <div class="divisi-cards">
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">11</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619789207_18048688181701821_3083883982878449252_n.webp?_nc_cat=103&amp;ig_cache_key=MzgxNDY2Mjk0MDQyODI3MjM5OQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=whTCFsIO3skQ7kNvwFsi6pi&amp;_nc_oc=AdqqzibnW66IYaJC7ETYJhU9dLHKzjowxtKMunegzD4hkVByxH8pEop1JrlP-M0VUBo&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=hxT6-UJUy77rJ-MQNICr9Q&amp;_nc_ss=7a22e&amp;oh=00_Af5rvf74HEWR4nsVtwFOE4AnC8eY_FTAeYZA_vfWc43oxA&amp;oe=6A09E33F" alt="Reza Hidayat" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00c8ff,#004488)">RH</div>
+            <div class="pc-body"><h3>M SYAMSUDIN</h3><div class="pc-role">BID. KREATIFITAS 1</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">12</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619845148_18048688190701821_5686435274451425731_n.webp?_nc_cat=100&amp;ig_cache_key=MzgxNDY2MjkzOTQ3MTk4MzUyMQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=ULSFZ4rJ2NgQ7kNvwFCthdQ&amp;_nc_oc=AdrQF0Hxg5QLq3jsjsjihMYFG-BNRrhx0VAku6ETvN0m-XypCFpUenpoEllZ9_UZojs&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=hxT6-UJUy77rJ-MQNICr9Q&amp;_nc_ss=7a22e&amp;oh=00_Af4HEZLl_9VF7nFx07D4qfc2_VDGOJZY358BS_8lTawK8A&amp;oe=6A09E124" alt="Sari Rahayu" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#ffcc00,#886600)">SR</div>
+            <div class="pc-body"><h3>ANTI SAFNATUL HIDAYAH</h3><div class="pc-role">BID. KREATIFITAS 2</div><div class="pc-kls">XI MPLB</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619904380_18048688199701821_1717520578222080278_n.webp?_nc_cat=102&amp;ig_cache_key=MzgxNDY2MjkzOTU5NzgzMjUyNA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=HMIzJnBk88sQ7kNvwF3HYyh&amp;_nc_oc=AdqstTDbwDjMt480vS1nqWE4o5JDFbw11iaRiLvKscgC9e5QfDqMFHLn1_1CGN-J4D4&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=hxT6-UJUy77rJ-MQNICr9Q&amp;_nc_ss=7a22e&amp;oh=00_Af5uOsrBJWAUDzYoqcSi-ZYUmiSpP4w3ZWcJLlRtkt8CYg&amp;oe=6A09E04C" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>QURA'AIN NADHIFAH P</h3><div class="pc-role">BID. KREATIFITAS 3</div><div class="pc-kls">XI MPLB</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/619532217_18048688208701821_8796197016759780940_n.webp?_nc_cat=107&amp;ig_cache_key=MzgxNDY2MjkzOTQ4MDM4MjcyMg%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=UTD4_9x0S-EQ7kNvwE46Mp0&amp;_nc_oc=AdpkXgEGVX86y9JmWtknU3Vw4cWyL4psRbflFHJ89-TRel952NW6i7MvjQSQFOS1w10&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=hxT6-UJUy77rJ-MQNICr9Q&amp;_nc_ss=7a22e&amp;oh=00_Af6TAWWq7iyRf0i8HzCB955Nx_NdGBQRPhfFzPthyHkikA&amp;oe=6A09DCDD" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>LASKAR FANANI</h3><div class="pc-role">BID. KREATIFITAS 4</div><div class="pc-kls">X TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/619713725_18048688481701821_7213288416038704971_n.webp?_nc_cat=108&amp;ig_cache_key=MzgxNDY2NDAzMjE4ODg0ODk3Mg%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=P-pD1y7ZmUIQ7kNvwFxaku1&amp;_nc_oc=AdrIZZd9tIpBQlqPegkpEYZ-pQCCxszVAovSMAEq_x6OgL6LBC7ckOJtqLrq_7QB3U0&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=tf0nYim455mPz5URQF21YA&amp;_nc_ss=7a22e&amp;oh=00_Af6JYOs91MiWhOeEk17c4xcC6mE5YAGHvhB8Fy2vAwVYwg&amp;oe=6A09DACE" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>ANDI LINTANG P</h3><div class="pc-role">BID. JURNALISTIK 1</div><div class="pc-kls">XI TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/619837029_18048688490701821_1571925284124980094_n.webp?_nc_cat=109&amp;ig_cache_key=MzgxNDY2NDAzMjI5NzkyNjk5Mg%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=DmIelO6xt9IQ7kNvwEUVCgd&amp;_nc_oc=Adr4o2U2xKFFA9nAWMNf3vI9XZGWIDM38TaqG01_QVoZF1H4fWAz109RBLV5LCo3ym0&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=tf0nYim455mPz5URQF21YA&amp;_nc_ss=7a22e&amp;oh=00_Af7OQgrz_sMeGR1I7Nv5l9kvLc2vhEd7G1_nFz6jMvgqgw&amp;oe=6A09E4A1" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>PENIA NURUL NAZWA</h3><div class="pc-role">BID. JURNALISTIK 2</div><div class="pc-kls">XI MPLB</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619899520_18048688538701821_3208726254444804108_n.webp?_nc_cat=111&amp;ig_cache_key=MzgxNDY2NDQ3NTUyNjgwMDE1Nw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=0equvRrzSUQQ7kNvwFzL5dD&amp;_nc_oc=AdqGwEGjkARpFuko1cNwlGm9eemHHAPClT0iPn-Ag0CP3mpgp0a44Kezv_Pb4l-ILFg&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=FjC4b0CLf9n2PDPZnVzhiQ&amp;_nc_ss=7a22e&amp;oh=00_Af6i-XUeOQrb2HNGsSKWi6ruhMxvgSPZ4JrJSrU8xDBDlQ&amp;oe=6A09D37B" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>HABIBAH S</h3><div class="pc-role">BID. EVENTORGANIZER 1</div><div class="pc-kls">XI LPKC</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/620323827_18048688550701821_3479387093071833218_n.webp?_nc_cat=110&amp;ig_cache_key=MzgxNDY2NDQ3NTUzNTE2MTQzMw%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=y4LxwUVtooMQ7kNvwGMESPa&amp;_nc_oc=AdqFeorxSk6vhnHQcUG5lCevNA4U1HTDFQlc_2p3iK4rd8ZL4Z7cOwJyr5fJiqIxP54&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=FjC4b0CLf9n2PDPZnVzhiQ&amp;_nc_ss=7a22e&amp;oh=00_Af45LDGKT1dTrbyRXWDBQ7EKfPBcP4yIKXfOY5IOiDPrtw&amp;oe=6A09D3BE" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>NAILUL ITSNA L Q</h3><div class="pc-role">BID. EVENTORGANIZER 2</div><div class="pc-kls">XI MPLB</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/619840974_18048688559701821_7388270256119039265_n.webp?_nc_cat=102&amp;ig_cache_key=MzgxNDY2NDQ3NTg3MDczNTY4NA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=1npC_NMviZEQ7kNvwEtpeWi&amp;_nc_oc=AdojRTb6d_kwd40k0LZ3hCCGugAuZS21nlbpKnmwfiug1ceMA0Uf0gMAM_cPMXHqo2c&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=FjC4b0CLf9n2PDPZnVzhiQ&amp;_nc_ss=7a22e&amp;oh=00_Af50QILXnjLLuRqwgQVET_jO06xfra4A5v6Uy1P-hivIHQ&amp;oe=6A09C63C" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>RAFASYAH HAMZAH</h3><div class="pc-role">BID. EVENTORGANIZER 3</div><div class="pc-kls">X TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/620236464_18048688568701821_4431506496645309247_n.webp?_nc_cat=108&amp;ig_cache_key=MzgxNDY2NDQ3NTU3NzExODEwMA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=rYMKP7gCP6gQ7kNvwF7h6UM&amp;_nc_oc=AdpYhMp7h9J1OAsKgjMOfJICl5sxlB1cU8bmxm-RuYV6-NpQQt3dIaugYLNobNozIyI&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=FjC4b0CLf9n2PDPZnVzhiQ&amp;_nc_ss=7a22e&amp;oh=00_Af6TSH6H--Obw0V6gxjH-wN_SJ52BGOok-MWn9CJv1clGQ&amp;oe=6A09C66A" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>M RIZKI RAMADANI</h3><div class="pc-role">BID. EVENTORGANIZER 4</div><div class="pc-kls">X TKJ</div></div>
+          </div>
+          <div class="pc">
+            <div class="pc-scan"></div>
+            <div class="pc-badge badge-bid">BID</div>
+            <div class="pc-num">13</div>
+            <img class="pc-photo" src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/620722826_18048688577701821_81035479991649553_n.webp?_nc_cat=108&amp;ig_cache_key=MzgxNDY2NDQ3NTUyNjc2NTM4NQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=VLx8aJnrRucQ7kNvwFCD5lK&amp;_nc_oc=Adr8MhZpuhQj6HQh6yRVHZ2z8nRuD9C6wJ1MondvD4ceIN1-QPUdDujs6gPoELrye6o&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=FjC4b0CLf9n2PDPZnVzhiQ&amp;_nc_ss=7a22e&amp;oh=00_Af4KsCqQzW8WjIX8fjJ3hDUw79yF5YU0J2cbkfM1AxwBaQ&amp;oe=6A09BC8B" alt="Ahmad Rifai" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+            <div class="pc-photo-placeholder" style="display:none;background:linear-gradient(135deg,#00ff88,#005533)">AR</div>
+            <div class="pc-body"><h3>HIKMAH MULIANINGSIH</h3><div class="pc-role">BID. EVENTORGANIZER 5</div><div class="pc-kls">X MPLB</div></div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- end org-tree -->
+  </div>
+</section>
+
+<!-- ══ PROGRAM KERJA ══ -->
+<section id="proker" class="proker">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">RENCANA KEGIATAN</div>
+      <h2 class="stit">Program <span>Kerja</span></h2>
+      <p class="sdesc">Program terstruktur untuk pengembangan siswa sepanjang tahun ajaran 2025/2026.</p>
+    </div>
+    <div class="tabs rv">
+      <button class="tab on" onclick="filterPk(this,'semua')">[ SEMUA ]</button>
+      <button class="tab" onclick="filterPk(this,'akademik')">[ AKADEMIK ]</button>
+      <button class="tab" onclick="filterPk(this,'seni')">[ SENI &amp; BUDAYA ]</button>
+      <button class="tab" onclick="filterPk(this,'olahraga')">[ OLAHRAGA ]</button>
+      <button class="tab" onclick="filterPk(this,'sosial')">[ SOSIAL ]</button>
+      <button class="tab" onclick="filterPk(this,'kerohanian')">[ KEROHANIAN ]</button>
+    </div>
+    <div class="pk-grid rv">
+      <div class="pk-card" data-kat="akademik">
+        <div class="pk-ico">🎓</div>
+        <h3>SMKI EXPO 2025</h3>
+        <p>Pameran karya siswa terbaik SMK Ihsanniat. Menampilkan produk unggulan dari setiap jurusan kepada masyarakat luas.</p>
+        <div class="pk-meta"><span class="pk-waktu">Jun 2025</span><span class="ptag tup">▶ MENDATANG</span></div>
+      </div>
+      <div class="pk-card" data-kat="akademik">
+        <div class="pk-ico">🔬</div>
+        <h3>Olimpiade Sains</h3>
+        <p>Kompetisi akademik tingkat sekolah menjaring siswa berprestasi di bidang sains, matematika, dan teknologi.</p>
+        <div class="pk-meta"><span class="pk-waktu">Apr 2025</span><span class="ptag trun">▶ BERLANGSUNG</span></div>
+      </div>
+      <div class="pk-card" data-kat="seni">
+        <div class="pk-ico">🎭</div>
+        <h3>Pentas Seni Islami</h3>
+        <p>Festival seni dan budaya islami sebagai wadah kreativitas siswa dalam seni pertunjukan dan musik religi.</p>
+        <div class="pk-meta"><span class="pk-waktu">Jul 2025</span><span class="ptag tup">▶ MENDATANG</span></div>
+      </div>
+      <div class="pk-card" data-kat="olahraga">
+        <div class="pk-ico">⚽</div>
+        <h3>Turnamen Olahraga</h3>
+        <p>Liga olahraga antar kelas: futsal, voli, badminton, dan tenis meja dengan sistem kompetisi penuh.</p>
+        <div class="pk-meta"><span class="pk-waktu">Mar 2025</span><span class="ptag tdone">▶ SELESAI</span></div>
+      </div>
+      <div class="pk-card" data-kat="sosial">
+        <div class="pk-ico">🌿</div>
+        <h3>Penghijauan Sekolah</h3>
+        <p>Program peduli lingkungan: penanaman pohon, pengelolaan taman, dan program daur ulang sampah sekolah.</p>
+        <div class="pk-meta"><span class="pk-waktu">Feb 2025</span><span class="ptag tdone">▶ SELESAI</span></div>
+      </div>
+      <div class="pk-card" data-kat="sosial">
+        <div class="pk-ico">🤝</div>
+        <h3>Bakti Sosial</h3>
+        <p>Kegiatan sosial membantu masyarakat sekitar Ngoro. Melibatkan seluruh siswa dalam aksi kepedulian nyata.</p>
+        <div class="pk-meta"><span class="pk-waktu">Agt 2025</span><span class="ptag tup">▶ MENDATANG</span></div>
+      </div>
+      <div class="pk-card" data-kat="kerohanian">
+        <div class="pk-ico">🕌</div>
+        <h3>Pesantren Kilat</h3>
+        <p>Kegiatan pendalaman agama Islam selama bulan Ramadhan untuk mempertebal iman dan takwa siswa.</p>
+        <div class="pk-meta"><span class="pk-waktu">Mar 2025</span><span class="ptag tdone">▶ SELESAI</span></div>
+      </div>
+      <div class="pk-card" data-kat="akademik">
+        <div class="pk-ico">💡</div>
+        <h3>Workshop &amp; Seminar</h3>
+        <p>Serangkaian workshop dan seminar karir untuk mempersiapkan siswa menghadapi dunia kerja dan pendidikan tinggi.</p>
+        <div class="pk-meta"><span class="pk-waktu">Mei 2025</span><span class="ptag tup">▶ MENDATANG</span></div>
+      </div>
+      <div class="pk-card" data-kat="seni">
+        <div class="pk-ico">📸</div>
+        <h3>Mading &amp; Jurnalistik</h3>
+        <p>Pengelolaan majalah dinding dan pelatihan jurnalistik untuk mengembangkan bakat menulis dan fotografi siswa.</p>
+        <div class="pk-meta"><span class="pk-waktu">Rutin</span><span class="ptag trun">▶ BERLANGSUNG</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ KEGIATAN ══ -->
+<section id="kegiatan" class="kegiatan">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">JADWAL AGENDA</div>
+      <h2 class="stit">Kegiatan &amp; <span>Kalender</span></h2>
+    </div>
+    <div class="kal-grid rv">
+      <div>
+        <div class="kal-table">
+          <div class="kal-head">// AGENDA MENDATANG</div>
+          <div class="kal-item">
+            <div class="kal-date"><div class="kd">28</div><div class="km">MEI</div></div>
+            <div class="kal-info"><h4>Rapat Koordinasi Semester 2</h4><p>Aula Sekolah — 14.00 WIB</p></div>
+            <div class="kal-badge">WAJIB</div>
+          </div>
+          <div class="kal-item">
+            <div class="kal-date"><div class="kd">05</div><div class="km">JUN</div></div>
+            <div class="kal-info"><h4>Pendaftaran Ekskul Baru TA 2025/2026</h4><p>Sekretariat OSIS — 08.00 WIB</p></div>
+            <div class="kal-badge">UMUM</div>
+          </div>
+          <div class="kal-item">
+            <div class="kal-date"><div class="kd">15</div><div class="km">JUN</div></div>
+            <div class="kal-info"><h4>SMKI EXPO 2025 — Persiapan Booth</h4><p>Seluruh kelas wajib ikut</p></div>
+            <div class="kal-badge">KEGIATAN</div>
+          </div>
+          <div class="kal-item">
+            <div class="kal-date"><div class="kd">20</div><div class="km">JUN</div></div>
+            <div class="kal-info"><h4>Deadline Proposal Bakti Sosial</h4><p>Kumpul ke Sekretaris OSIS</p></div>
+            <div class="kal-badge">DEADLINE</div>
+          </div>
+          <div class="kal-item">
+            <div class="kal-date"><div class="kd">10</div><div class="km">JUL</div></div>
+            <div class="kal-info"><h4>Pelantikan Pengurus OSIS Baru</h4><p>Aula Sekolah — 09.00 WIB</p></div>
+            <div class="kal-badge">SEREMONIAL</div>
+          </div>
+        </div>
+      </div>
+      <div class="agenda-big">
+        <div class="ab-card"><div class="ab-ico">🎉</div><div><h4>SMKI EXPO 2025</h4><p>Pameran karya siswa terbesar tahun ini — Juni 2025</p></div></div>
+        <div class="ab-card"><div class="ab-ico">⚽</div><div><h4>Liga Olahraga Antar Kelas</h4><p>Futsal, Voli, Badminton — Setiap Sabtu</p></div></div>
+        <div class="ab-card"><div class="ab-ico">🏆</div><div><h4>Olimpiade Sains Sekolah</h4><p>Seleksi menuju OSN tingkat Kabupaten</p></div></div>
+        <div class="ab-card"><div class="ab-ico">🎭</div><div><h4>Pentas Seni Islami</h4><p>Festival tahunan hadrah, teater, dan seni budaya</p></div></div>
+        <div class="ab-card"><div class="ab-ico">🤝</div><div><h4>Bakti Sosial Masyarakat</h4><p>Kegiatan sosial di lingkungan Ngoro</p></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ BERITA ══ -->
+<section id="berita" class="berita">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">INFORMASI TERKINI</div>
+      <h2 class="stit">Berita &amp; <span>Pengumuman</span></h2>
+    </div>
+    <div class="berita-grid rv">
+      <div>
+        <div class="bn">
+          <div class="bn-img">
+            <img src="https://images.unsplash.com/photo-1567596275753-92607c3ce1ae?w=800&q=80" alt="Berita Utama">
+            <div class="bn-io"></div>
+          </div>
+          <div class="bn-b">
+            <div class="bn-cat">⚡ BERITA UTAMA</div>
+            <h3>OSIS SMK Ihsanniat Raih Juara 1 Lomba Religi Siswa Kabupaten Jombang 2025</h3>
+            <p>Tim OSIS berhasil meraih juara pertama dalam lomba kreasi dan inovasi siswa tingkat Sekolah. Prestasi membanggakan hasil kerja keras seluruh anggota OSIS.</p>
+            <div class="bn-date"><i class="far fa-calendar-alt"></i> 20 April 2025</div>
+          </div>
+        </div>
+      </div>
+      <div class="bn-side">
+        <div class="bns"><div class="bns-cat">AKADEMIK</div><h4>Olimpiade Sains Nasional 2026 Resmi Dimulai</h4><div class="bns-date">15 April 2025</div></div>
+        <div class="bns"><div class="bns-cat">OLAHRAGA</div><h4>Turnamen Futsal Antar Kelas Resmi Dimulai</h4><div class="bns-date">10 April 2025</div></div>
+        <div class="bns"><div class="bns-cat">LINGKUNGAN</div><h4>Program Penghijauan Sukses Tanam 20 Pohon</h4><div class="bns-date">5 April 2025</div></div>
+        <div class="bns"><div class="bns-cat">WORKSHOP</div><h4>Workshop Desain Grafis untuk Anggota OSIS</h4><div class="bns-date">1 April 2025</div></div>
+        <div class="bns"><div class="bns-cat">ORGANISASI</div><h4>Pelantikan Pengurus OSIS Periode 2025/2026</h4><div class="bns-date">20 Juli 2025</div></div>
+        <div class="bns"><div class="bns-cat">PRESTASI</div><h4>Siswa Ihsanniat Lolos OSN Tingkat Provinsi Jatim</h4><div class="bns-date">18 Maret 2025</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ GALERI ══ -->
+<section id="galeri" class="galeri">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">DOKUMENTASI</div>
+      <h2 class="stit">Galeri <span>Foto Kegiatan</span></h2>
+      <p class="sdesc">Momen-momen berharga dari berbagai kegiatan OSIS SMK Ihsanniat.</p>
+    </div>
+    <div class="gal-grid rv" id="galGrid">
+      <div class="gi"><img src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/566695296_18038133596701821_8296964357027295611_n.webp?_nc_cat=102&amp;ig_cache_key=Mzc0NjY3MjkxNjAzODkwNTE2NA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=4aZxQ13DZHAQ7kNvwHhDnTH&amp;_nc_oc=AdpcCWYxogeO5SI00KTGI-dFmw7hTHn3iOGkecPbOKUZpNDScUd-Ei15DUlJEbUNCKo&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=A16foBEBjFLIjZSI-51kYQ&amp;_nc_ss=7a22e&amp;oh=00_Af4SKpY1yd9ycSqtefUBNSE8sjsVDlksABDshi5dnRmpUg&amp;oe=6A0B2658" alt="Wisuda"><div class="gi-ov"></div><div class="gi-lbl">WISUDA 2024</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/566748533_18038133605701821_700877042603645597_n.webp?_nc_cat=104&amp;ig_cache_key=Mzc0NjY3MjkxNjAzMDU0MDY5MA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=1JoxRblnW6UQ7kNvwEraZYV&amp;_nc_oc=AdqaWoCVkCTlpYQCZ5i3S3et0raatXBj27F3gdSbhMJ-8NBXyo3CeRNQWo6Rv2yl9cA&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=A16foBEBjFLIjZSI-51kYQ&amp;_nc_ss=7a22e&amp;oh=00_Af6eFIuq1VnG5gy4dl7NC00Zafg2woNkfAxASay7xsZ8Mg&amp;oe=6A0B0FA7" alt="Upacara"><div class="gi-ov"></div><div class="gi-lbl">UPACARA</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/566420083_18038133614701821_8787997303760327574_n.webp?_nc_cat=105&amp;ig_cache_key=Mzc0NjY3MjkxNjA0NzMxNzg4Mg%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=QrcMzK_TzrIQ7kNvwExrI6M&amp;_nc_oc=AdojJLXI5ZCCwrDG8L2a00OCYVbM1_r6G3mAuEGZsPRD8qlfFvkSX1iPu69D5alYtI8&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=A16foBEBjFLIjZSI-51kYQ&amp;_nc_ss=7a22e&amp;oh=00_Af7SMz3MX-EUkITjvpkj4q90ZBwan0DvGcypdmlEppobeA&amp;oe=6A0B04A0" alt="Bakti Sosial"><div class="gi-ov"></div><div class="gi-lbl">BAKTI SOSIAL</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/567886315_18038133188701821_4944569227322883471_n.webp?_nc_cat=103&amp;ig_cache_key=Mzc0NjY2ODczMzg2NDgxMDcxMA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=HxX9qX9exxcQ7kNvwGh0Rji&amp;_nc_oc=AdqbFcqkZyiV4L7lwm_bEqbG6E5ruHauzuTkaRp8tv20H723L27bCVstTzEScpNhntU&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=hXomQONLlKwa5oPraSQyPA&amp;_nc_ss=7a22e&amp;oh=00_Af563n-EbRxTkkb1_PEQW80YHQGO6vx7U62mp783ptkclg&amp;oe=6A0AFA69" alt="Expo"><div class="gi-ov"></div><div class="gi-lbl">SMKI EXPO</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/569027839_18038132906701821_5568685407115059163_n.webp?_nc_cat=108&amp;ig_cache_key=Mzc0NjY2NjMyNDIyMDQyMzUyMQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=GCnXZ5tZFWIQ7kNvwFW5P1W&amp;_nc_oc=AdqxkiIE10sU3blUUA-a1RWWbgKAECKyPD1IWrAsZIECL2zzBNmVRsutQXGPDcUPsfc&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=ZSxvrDAKN9bu9osUjXqb0g&amp;_nc_ss=7a22e&amp;oh=00_Af7HTRvB6vTCqRE9ossj2LkmewBsx8jhRY2TVhaidI4sjQ&amp;oe=6A0B28AB" alt="Seni"><div class="gi-ov"></div><div class="gi-lbl">PENTAS SENI</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.82787-15/567733827_18038132924701821_2680948950173586021_n.webp?_nc_cat=109&amp;ig_cache_key=Mzc0NjY2NjMyNDA2MTAwNTg0OQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=0RdKgZ0GL2wQ7kNvwEdkoqT&amp;_nc_oc=Adrh9JVs9n9yo2lLotOYpwXEF0mn5_TIfCT7gh0VQYRuyRsoAYyeN-BHE3fszOzPEpg&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=ZSxvrDAKN9bu9osUjXqb0g&amp;_nc_ss=7a22e&amp;oh=00_Af7-wPgza8wBfRaiEkO-y8eFs509giCt6GoTbsqcUNYktA&amp;oe=6A0B273D" alt="Belajar"><div class="gi-ov"></div><div class="gi-lbl">AKADEMIK</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.82787-15/567394673_18038132954701821_4213645128606732564_n.webp?_nc_cat=111&amp;ig_cache_key=Mzc0NjY2NjMyNDA2MTAxMjgwMA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTQ0MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=dCzEBqEl5ikQ7kNvwF1mt_z&amp;_nc_oc=AdoFOXtEq2ea2lmB4Kd7a_KB0p9lx9hrL9JDomSRehysnzwqphsuzlzs5AYL6BkNO9s&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=ZSxvrDAKN9bu9osUjXqb0g&amp;_nc_ss=7a22e&amp;oh=00_Af4bmkQBrgdrZraM6RRHPXkyqwQYGroeNgSWKEzugY55Lg&amp;oe=6A0B2D5F" alt="Ekskul"><div class="gi-ov"></div><div class="gi-lbl">EKSKUL</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-1.fna.fbcdn.net/v/t51.75761-15/476483513_18008820023701821_1952637958111043704_n.webp?_nc_cat=102&amp;ig_cache_key=MzU2MDI5MTkwNTMyODQ4OTgxOQ%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTA4MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=Ce9TeL-ARFsQ7kNvwH88yvp&amp;_nc_oc=AdoMyhSBuDpXe6TCumjolWZ8nk5iXI8_tTOSXd1sS8gYc1SowDF5b7Z5qJeP8L6P8Ic&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-1.fna&amp;_nc_gid=v6M9xRMarl0iXs9HcvDGvA&amp;_nc_ss=7a22e&amp;oh=00_Af47zKfB9BiXpjJwL2HmC4cPUHvXrx5iL8otAYxFrz1SyQ&amp;oe=6A0B2BC2" alt="Kerohanian"><div class="gi-ov"></div><div class="gi-lbl">KEROHANIAN</div></div>
+      <div class="gi"><img src="https://instagram.fsub8-2.fna.fbcdn.net/v/t51.75761-15/476475049_18008820035701821_8848476917839492872_n.webp?_nc_cat=105&amp;ig_cache_key=MzU2MDI5MTkwNTI3ODEyNzcxMA%3D%3D.3-ccb7-5&amp;ccb=7-5&amp;_nc_sid=58cdad&amp;efg=eyJ2ZW5jb2RlX3RhZyI6IkNBUk9VU0VMX0lURU0ueHBpZHMuMTA4MC5zZHIucmVndWxhcl9waG90by5DMyJ9&amp;_nc_ohc=b51ZeXQKeu4Q7kNvwElGxly&amp;_nc_oc=AdrRAoS5m1DvgBFWPBvq_4gzWmH0ddEKy0ecmx7r8f5kIPo6YQIGfQmf9QC2ZY3sj-E&amp;_nc_ad=z-m&amp;_nc_cid=0&amp;_nc_zt=23&amp;_nc_ht=instagram.fsub8-2.fna&amp;_nc_gid=v6M9xRMarl0iXs9HcvDGvA&amp;_nc_ss=7a22e&amp;oh=00_Af7yLK-1kX22dz2m8SduAo_POogdTbA0LFQLXxWGxLD0rg&amp;oe=6A0B20D0" alt="Prestasi"><div class="gi-ov"></div><div class="gi-lbl">PRESTASI</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ EKSKUL ══ -->
+<section id="ekskul" class="ekskul">
+  <div class="sec">
+    <div class="rv" style="text-align:center">
+      <div class="stag">PENGEMBANGAN DIRI</div>
+      <h2 class="stit">Ekstrakurikuler <span>Unggulan</span></h2>
+      <p class="sdesc" style="margin:0 auto">Pilih dan kembangkan bakatmu bersama ekskul terbaik SMK Ihsanniat.</p>
+    </div>
+    <div class="ek-grid rv">
+      <div class="ec"><div class="ec-ico">⚽</div><h4>Futsal</h4><div class="ec-hari">SEN &amp; RAB · 15:00</div><div class="ec-desc">Lapangan Sekolah</div></div>
+      <div class="ec"><div class="ec-ico">🏐</div><h4>Bola Voli</h4><div class="ec-hari">SEL &amp; KAM · 15:00</div><div class="ec-desc">Lapangan Sekolah</div></div>
+      <div class="ec"><div class="ec-ico">🥋</div><h4>Pencak Silat</h4><div class="ec-hari">JUM &amp; SAB · 07:00</div><div class="ec-desc">Aula Sekolah</div></div>
+      <div class="ec"><div class="ec-ico">🏸</div><h4>Badminton</h4><div class="ec-hari">SEL &amp; SAB · 15:00</div><div class="ec-desc">GOR Sekolah</div></div>
+      <div class="ec"><div class="ec-ico">🎵</div><h4>Hadrah</h4><div class="ec-hari">RAB · 14:30</div><div class="ec-desc">Mushola Sekolah</div></div>
+      <div class="ec"><div class="ec-ico">🎭</div><h4>Teater</h4><div class="ec-hari">KAM · 14:00</div><div class="ec-desc">Aula Sekolah</div></div>
+      <div class="ec"><div class="ec-ico">📷</div><h4>Fotografi</h4><div class="ec-hari">SAB · 08:00</div><div class="ec-desc">Studio Foto</div></div>
+      <div class="ec"><div class="ec-ico">🤖</div><h4>Robotika</h4><div class="ec-hari">SEN · 14:00</div><div class="ec-desc">Lab Komputer</div></div>
+      <div class="ec"><div class="ec-ico">🎨</div><h4>Desain Grafis</h4><div class="ec-hari">SEL · 14:00</div><div class="ec-desc">Lab Komputer</div></div>
+      <div class="ec"><div class="ec-ico">📰</div><h4>Jurnalistik</h4><div class="ec-hari">KAM · 13:30</div><div class="ec-desc">Ruang Media</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ PRESTASI ══ -->
+<section id="prestasi" class="prestasi">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">PENCAPAIAN</div>
+      <h2 class="stit">Prestasi <span>Membanggakan</span></h2>
+      <p class="sdesc">Deretan prestasi gemilang siswa SMK Ihsanniat dalam berbagai kompetisi.</p>
+    </div>
+    <div class="pr-grid rv">
+      <div class="prc"><div class="prc-ico">🥇</div><div class="prc-info"><h4>Juara 1 Lomba Qiro'ah Siswa Kabupaten Jombang</h4><div class="prc-lvl">★ TINGKAT KABUPATEN</div><div class="prc-yr">April 2025</div></div></div>
+      <div class="prc"><div class="prc-ico">🥈</div><div class="prc-info"><h4>Juara 2 Turnamen Futsal SMK se-Jawa Timur</h4><div class="prc-lvl">★ TINGKAT PROVINSI</div><div class="prc-yr">Maret 2025</div></div></div>
+      <div class="prc"><div class="prc-ico">🏅</div><div class="prc-info"><h4>Finalis Lomba Kompetensi Siswa (LKS) Jombang</h4><div class="prc-lvl">★ TINGKAT KABUPATEN</div><div class="prc-yr">Februari 2025</div></div></div>
+      <div class="prc"><div class="prc-ico">🥇</div><div class="prc-info"><h4>Juara 1 Gerak Jalan Kecamatan Ngoro</h4><div class="prc-lvl">★ TINGKAT KECAMATAN</div><div class="prc-yr">Januari 2025</div></div></div>
+      <div class="prc"><div class="prc-ico">🥉</div><div class="prc-info"><h4>Juara 3 Tartil Putri SMA/SMK Jombang</h4><div class="prc-lvl">★ TINGKAT KABUPATEN</div><div class="prc-yr">November 2024</div></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ ANGGOTA ══ -->
+<section id="anggota" class="anggota">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">DATA KEANGGOTAAN</div>
+      <h2 class="stit">Data <span>Anggota</span></h2>
+    </div>
+    <div class="anggota-wrap rv">
+      <div class="angg-info">
+        <div class="angg-stat-grid">
+          <div class="angg-stat"><div class="asn">32+</div><div class="asl">Total Anggota</div></div>
+          <div class="angg-stat"><div class="asn">3</div><div class="asl">Jurusan</div></div>
+          <div class="angg-stat"><div class="asn">12</div><div class="asl">Rombel</div></div>
+          <div class="angg-stat"><div class="asn">10</div><div class="asl">Ekskul Aktif</div></div>
+        </div>
+        <div class="angg-desc">
+          <p>Seluruh siswa SMK Ihsanniat Ngoro secara otomatis menjadi anggota OSIS. OSIS berkomitmen untuk melayani seluruh anggota dalam kegiatan akademik maupun non-akademik.</p>
+          <p style="margin-top:.8rem">Daftarkan diri kamu ke ekskul favorit di awal tahun ajaran dan aktif berpartisipasi dalam setiap program kerja OSIS!</p>
+        </div>
+      </div>
+      <div class="angg-table">
+        <table>
+          <thead>
+            <tr><th>KELAS / JURUSAN</th><th>WALI KELAS</th><th>JML SISWA</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>X TKJ 1 — Teknik Komputer Jaringan</td><td>Bpk. Dwi Mustofa Andi S.pd.</td><td>36</td></tr>
+            <tr><td>XI TKJ 2 — Teknik Komputer Jaringan</td><td>Ibu Sri Utami S.kom.</td><td>34</td></tr>
+            <tr><td>X TKJ 3 — Teknik Komputer Jaringan</td><td>Ibu Kustiya S.pd.</td><td>36</td></tr>
+            <tr><td>X MPLB — Manajemen Per </td><td>Bpk. Hendra K.</td><td>34</td></tr>
+            <tr><td>XI TKJ 1 — Teknik Komputer Jaringan</td><td>Bpk. Doni P.</td><td>35</td></tr>
+            <tr><td>XI TKJ 2 — Teknik Komputer Jaringan</td><td>Ibu Maya L.</td><td>33</td></tr>
+            <tr><td>XI AKL 1 — Akuntansi &amp; Keuangan</td><td>Ibu Fitri A.</td><td>35</td></tr>
+            <tr><td>XI BDP 1 — Bisnis Daring &amp; Pemasaran</td><td>Bpk. Yanto S.</td><td>32</td></tr>
+            <tr><td>XII TKJ 1 — Teknik Komputer Jaringan</td><td>Bpk. Rudi H.</td><td>34</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ KONTAK ══ -->
+<section id="kontak" class="kontak">
+  <div class="sec">
+    <div class="rv">
+      <div class="stag">HUBUNGI KAMI</div>
+      <h2 class="stit">Kontak &amp; <span>Aspirasi</span></h2>
+      <p class="sdesc">Sampaikan aspirasi, saran, dan pertanyaanmu kepada OSIS SMK Ihsanniat.</p>
+    </div>
+    <div class="kontak-grid rv">
+      <div>
+        <div class="kon-info">
+          <div class="kon-item"><i class="fas fa-map-marker-alt"></i><span>Jl. Raya Ngoro No.1, Ngoro, Kabupaten Jombang, Jawa Timur 61473</span></div>
+          <div class="kon-item"><i class="fas fa-phone"></i><span>+62 812-3456-7890 (Ketua OSIS)</span></div>
+          <div class="kon-item"><i class="fas fa-envelope"></i><span>osis@smkihsanniat.sch.id</span></div>
+          <div class="kon-item"><i class="fab fa-instagram"></i><span>@osis.smkihsanniat</span></div>
+          <div class="kon-item"><i class="fab fa-whatsapp"></i><span>Grup WA OSIS SMK Ihsanniat</span></div>
+          <div class="kon-item"><i class="fas fa-clock"></i><span>Sekretariat: Senin–Jumat · 08.00–15.00 WIB</span></div>
+        </div>
+        <div class="map-box">
+          <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3955.012874186!2d112.25!3d-7.5!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zN8KwMzAnMDAuMCJTIDExMsKwMTUnMDAuMCJF!5e0!3m2!1sid!2sid!4v1620000000000!5m2!1sid!2sid" allowfullscreen="" loading="lazy"></iframe>
+          <div class="map-ov"></div>
+        </div>
+      </div>
+      <div class="kon-form">
+        <h3>// KIRIM ASPIRASI</h3>
+        <div class="fg"><label>NAMA LENGKAP</label><input type="text" placeholder="Nama kamu..."></div>
+        <div class="fg"><label>KELAS</label>
+          <select>
+            <option>-- Pilih Kelas --</option>
+            <option>X TKJ 1</option><option>X TKJ 2</option><option>X AKL 1</option><option>X BDP 1</option>
+            <option>XI TKJ 1</option><option>XI TKJ 2</option><option>XI AKL 1</option><option>XI BDP 1</option>
+            <option>XII TKJ 1</option><option>XII AKL 1</option><option>XII BDP 1</option>
+          </select>
+        </div>
+        <div class="fg"><label>KATEGORI ASPIRASI</label>
+          <select><option>Kegiatan Sekolah</option><option>Fasilitas</option><option>Organisasi OSIS</option><option>Ekskul</option><option>Beasiswa</option><option>Lainnya</option></select>
+        </div>
+        <div class="fg"><label>ISI PESAN / ASPIRASI</label><textarea placeholder="Tulis aspirasi, saran, atau pertanyaanmu di sini..."></textarea></div>
+        <button class="bsend" onclick="kirim(this)"><i class="fas fa-paper-plane"></i>&nbsp; KIRIM SEKARANG</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SOSMED BAR -->
+<div class="sosmed-bar">
+  <div class="sosmed-inner">
+    <div class="sosmed-txt">// IKUTI KAMI DI MEDIA SOSIAL</div>
+    <div class="sosmed-links">
+      <a href="#"><i class="fab fa-instagram"></i> Instagram</a>
+      <a href="#"><i class="fab fa-youtube"></i> YouTube</a>
+      <a href="#"><i class="fab fa-tiktok"></i> TikTok</a>
+      <a href="#"><i class="fab fa-whatsapp"></i> WhatsApp</a>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="foot-inner">
+    <div class="foot-top">
+      <div class="fb">
+        <h3>⚡ OSIS SMK IHSANNIAT</h3>
+        <p>Organisasi Siswa Intra Sekolah SMK Ihsanniat Ngoro, Kabupaten Jombang, Jawa Timur. Bersatu, Berkarya, dan Berprestasi.</p>
+        <div class="socs">
+          <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" title="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" title="WhatsApp"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" title="TikTok"><i class="fab fa-tiktok"></i></a>
+          <a href="#" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+        </div>
+      </div>
+      <div class="fc">
+        <h4>MENU UTAMA</h4>
+        <a href="#beranda">Beranda</a>
+        <a href="#profil">Profil OSIS</a>
+        <a href="#pengurus">Pengurus</a>
+        <a href="#proker">Program Kerja</a>
+        <a href="#kegiatan">Kegiatan</a>
+      </div>
+      <div class="fc">
+        <h4>INFORMASI</h4>
+        <a href="#berita">Berita</a>
+        <a href="#galeri">Galeri</a>
+        <a href="#ekskul">Ekskul</a>
+        <a href="#prestasi">Prestasi</a>
+        <a href="#anggota">Data Anggota</a>
+      </div>
+      <div class="fc">
+        <h4>KONTAK</h4>
+        <a href="#">SMK Ihsanniat Ngoro</a>
+        <a href="#">Jl. Raya Ngoro No.1</a>
+        <a href="#">Ngoro, Jombang 61473</a>
+        <a href="#">osis@smkihsanniat.sch.id</a>
+        <a href="#">+62 812-3456-7890</a>
+      </div>
+    </div>
+    <div class="foot-bot">
+      <p>© 2025 <span>OSIS SMK Ihsanniat Ngoro Jombang</span>. Hak Cipta Dilindungi.</p>
+      <p>Dibuat dengan ❤ oleh <span>Tim OSIS</span></p>
+    </div>
+  </div>
+</footer>
+
+<!-- LIGHTBOX -->
+<div id="lb" onclick="closeLb()">
+  <div class="lb-close"><i class="fas fa-times"></i></div>
+  <img id="lbImg" src="" alt="">
+</div>
+
+<!-- BACK TO TOP -->
+<div id="btt" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+  <i class="fas fa-chevron-up"></i>
+</div>
+
+<script>
+/* LOADER */
+const msgs=['MEMUAT SISTEM...','LOADING DATABASE OSIS...','MENGHUBUNGKAN SMK IHSANNIAT...','SISTEM SIAP ✓'];
+let lp=0;
+const lf=document.getElementById('lfill'),lt=document.getElementById('ltxt');
+function load(){if(lp>100){setTimeout(()=>document.getElementById('ldr').classList.add('out'),400);return}lf.style.width=lp+'%';lt.textContent=msgs[Math.min(Math.floor(lp/30),3)];lp+=Math.random()*8+4;setTimeout(load,55)}
+load();
+
+/* CURSOR */
+const cur=document.getElementById('cur'),cur2=document.getElementById('cur2');
+let mx=0,my=0,rx=0,ry=0;
+document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px'});
+(function a(){rx+=(mx-rx)*.15;ry+=(my-ry)*.15;cur2.style.left=rx+'px';cur2.style.top=ry+'px';requestAnimationFrame(a)})();
+document.querySelectorAll('a,button,.pc,.pk-card,.bn,.bns,.gi,.ec,.prc,.vm-item,.kon-item,.ab-card,.kal-item,.angg-stat,.btt').forEach(el=>{
+  el.addEventListener('mouseenter',()=>{cur2.style.transform='translate(-50%,-50%) scale(2)';cur2.style.opacity='.2';cur.style.transform='translate(-50%,-50%) scale(.4)'});
+  el.addEventListener('mouseleave',()=>{cur2.style.transform='translate(-50%,-50%) scale(1)';cur2.style.opacity='.45';cur.style.transform='translate(-50%,-50%) scale(1)'});
+});
+
+/* BG CANVAS */
+const cv=document.getElementById('bgc'),ctx=cv.getContext('2d');
+let W,H,pts=[];
+function rsz(){W=cv.width=innerWidth;H=cv.height=innerHeight}rsz();addEventListener('resize',rsz);
+for(let i=0;i<80;i++)pts.push({x:Math.random()*W,y:Math.random()*H,vx:(Math.random()-.5)*.28,vy:(Math.random()-.5)*.28,r:Math.random()*1.3+.3,o:Math.random()*.28+.06});
+(function draw(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;if(p.x<0)p.x=W;if(p.x>W)p.x=0;if(p.y<0)p.y=H;if(p.y>H)p.y=0;ctx.beginPath();ctx.arc(p.x,p.y,p.r,0,Math.PI*2);ctx.fillStyle=`rgba(0,255,231,${p.o})`;ctx.fill()});pts.forEach((a,i)=>pts.slice(i+1).forEach(b=>{const d=Math.hypot(a.x-b.x,a.y-b.y);if(d<110){ctx.beginPath();ctx.moveTo(a.x,a.y);ctx.lineTo(b.x,b.y);ctx.strokeStyle=`rgba(0,255,231,${.05*(1-d/110)})`;ctx.lineWidth=.5;ctx.stroke()}}));requestAnimationFrame(draw)})();
+
+/* NAV & SCROLL */
+window.addEventListener('scroll',()=>{
+  document.getElementById('nav').classList.toggle('sc',scrollY>60);
+  document.getElementById('hscr').textContent=String(Math.floor(scrollY)).padStart(3,'0');
+  document.getElementById('btt').classList.toggle('show',scrollY>400);
+});
+document.querySelectorAll('.nlinks a').forEach(a=>a.addEventListener('click',()=>document.getElementById('nl').classList.remove('open')));
+
+/* CLOCK */
+setInterval(()=>document.getElementById('htime').textContent=new Date().toTimeString().slice(0,8),1000);
+document.getElementById('htime').textContent=new Date().toTimeString().slice(0,8);
+
+/* SCROLL REVEAL */
+const ro=new IntersectionObserver(es=>{es.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('vis'),i*70);ro.unobserve(e.target)}})},{threshold:.07});
+document.querySelectorAll('.rv,.rvl,.rvr').forEach(r=>ro.observe(r));
+
+/* COUNTER */
+function cnt(el,t){let v=0,s=t/65;const x=setInterval(()=>{v=Math.min(v+s,t);el.textContent=Math.floor(v)+(t>=100?'+':'');if(v>=t)clearInterval(x)},22)}
+const co=new IntersectionObserver(es=>{if(es[0].isIntersecting){document.querySelectorAll('[data-t]').forEach(e=>cnt(e,+e.dataset.t));co.disconnect()}},{threshold:.5});
+const sb=document.querySelector('.stats');if(sb)co.observe(sb);
+
+/* PROKER FILTER */
+function filterPk(btn,kat){
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('on'));btn.classList.add('on');
+  document.querySelectorAll('.pk-card').forEach(c=>{
+    if(kat==='semua'||c.dataset.kat===kat){c.style.display='';setTimeout(()=>{c.style.opacity='1';c.style.transform=''},10)}
+    else{c.style.opacity='0';c.style.transform='translateY(10px)';setTimeout(()=>c.style.display='none',200)}
+  });
+}
+
+/* SMOOTH SCROLL */
+document.querySelectorAll('a[href^="#"]').forEach(a=>a.addEventListener('click',e=>{e.preventDefault();const t=document.querySelector(a.getAttribute('href'));if(t)t.scrollIntoView({behavior:'smooth',block:'start'})}));
+
+/* GALERI LIGHTBOX */
+document.querySelectorAll('.gi').forEach(gi=>gi.addEventListener('click',()=>{const img=gi.querySelector('img');if(img)openLb(img.src)}));
+function openLb(src){const lb=document.getElementById('lb');lb.classList.add('show');document.getElementById('lbImg').src=src}
+function closeLb(){document.getElementById('lb').classList.remove('show')}
+
+/* FORM ASPIRASI */
+function kirim(btn){btn.innerHTML='<i class="fas fa-check-circle"></i>&nbsp; TERKIRIM!';btn.style.background='linear-gradient(90deg,#7fff00,#3a7000)';setTimeout(()=>{btn.innerHTML='<i class="fas fa-paper-plane"></i>&nbsp; KIRIM SEKARANG';btn.style.background=''},3000)}
+
+/* GLITCH */
+setInterval(()=>{const el=document.querySelector('.ht2');if(el&&Math.random()>.97){el.style.opacity='.7';el.style.filter='hue-rotate(90deg)';setTimeout(()=>{el.style.opacity='';el.style.filter=''},70)}},120);
+
+/* ACTIVE NAV HIGHLIGHT */
+const sections=document.querySelectorAll('section[id]');
+const navLinks=document.querySelectorAll('.nlinks a[href^="#"]');
+window.addEventListener('scroll',()=>{
+  let cur='';
+  sections.forEach(s=>{if(scrollY>=s.offsetTop-100)cur=s.id});
+  navLinks.forEach(a=>{a.style.color=a.getAttribute('href')==='#'+cur?'var(--c)':'';});
+});
+</script>
+</body>
+</html>
